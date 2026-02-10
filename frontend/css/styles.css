@@ -362,44 +362,47 @@ img { max-width: 100%; height: auto; }
 }
 
 .hero-subtitle {
-    font-size: clamp(1.8rem, 4.2vw, 2.6rem);
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
     font-weight: 500;
     margin-bottom: 48px;
-    line-height: 1.6;
-    letter-spacing: 0.03em;
-    max-width: 700px;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
-    background: linear-gradient(135deg, rgba(255, 254, 249, 0.95) 0%, rgba(255, 254, 249, 0.85) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 4px 8px rgba(91, 159, 217, 0.15));
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: rgba(255, 254, 249, 0.95);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
 }
 
-/* Glossy effect for Sky word */
+/* Glass effect for Sky word with backlighting */
 .hero-subtitle span {
-    background: linear-gradient(135deg, #5B9FD9 0%, #7CB8E6 50%, #4A8FCC 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
     font-weight: 700;
-    text-shadow: 0 2px 8px rgba(91, 159, 217, 0.3);
-    filter: drop-shadow(0 0 12px rgba(91, 159, 217, 0.2));
+    font-size: 1.15em;
+    color: #5B9FD9;
     position: relative;
+    display: inline-block;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(91, 159, 217, 0.15) 0%, rgba(123, 184, 230, 0.1) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(91, 159, 217, 0.3);
+    border-radius: 8px;
+    box-shadow:
+        0 0 40px rgba(91, 159, 217, 0.6),
+        0 0 80px rgba(91, 159, 217, 0.4),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 0 20px rgba(91, 159, 217, 0.8);
 }
 
-.hero-subtitle span::after {
+.hero-subtitle span::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
-    pointer-events: none;
-    border-radius: 2px;
+    inset: -20px;
+    background: radial-gradient(circle, rgba(91, 159, 217, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(30px);
 }
 
 .hero-buttons {
