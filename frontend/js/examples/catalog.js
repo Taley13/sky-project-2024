@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) products = await res.json();
             renderProducts();
         } catch (e) {
-            console.log('Catalog unavailable:', e.message);
+            // Catalog API unavailable
         }
     }
 

@@ -36,12 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     allProducts = await prodRes.json();
                 }
             } catch (e) {
-                console.log('Failed to load products:', e.message);
+                // Products API unavailable
             }
 
             renderProducts(allProducts);
         } catch (e) {
-            console.log('Failed to load data:', e.message);
+            // Data loading failed
         }
     }
 

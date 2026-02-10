@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         } catch (e) {
-            console.log('Categories not available:', e.message);
+            // Categories API unavailable
         }
     }
 
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 grid.appendChild(div);
             });
         } catch (e) {
-            console.log('Hexagons not available:', e.message);
+            // Hexagons API unavailable
         }
     }
 
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('#footerPhone').forEach(el => { if (data.phone) el.textContent = data.phone; });
             document.querySelectorAll('#footerEmail').forEach(el => { if (data.email) el.textContent = data.email; });
         } catch (e) {
-            console.log('Contacts not available:', e.message);
+            // Contacts API unavailable
         }
     }
 

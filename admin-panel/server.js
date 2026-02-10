@@ -33,7 +33,9 @@ app.use(helmet({
 
 // CSP Violation Reporting
 app.post('/api/csp-violation', express.json({ type: 'application/csp-report' }), (req, res) => {
-    if (req.body) console.warn('CSP Violation:', JSON.stringify(req.body, null, 2));
+    if (req.body && process.env.NODE_ENV !== 'production') {
+        console.warn('CSP Violation:', JSON.stringify(req.body, null, 2));
+    }
     res.status(204).end();
 });
 
@@ -244,7 +246,7 @@ async function initDatabase() {
             demoCategories.forEach(cat => {
                 db.run(`INSERT INTO categories (site, key, name_pl, name_en, name_de, name_ru, icon, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, cat);
             });
-            console.log('Demo categories created');
+            if (process.env.NODE_ENV !== 'production') console.log('Demo categories created');
             saveDatabase();
         }
 
@@ -252,7 +254,7 @@ async function initDatabase() {
         if (contactExists.length === 0) {
             db.run(`INSERT INTO contacts (site, phone, email, address, contact_person) VALUES (?, ?, ?, ?, ?)`,
                 [SITE_KEY, '+XX XXX XXX XXX', 'contact@example.com', 'Your Address', 'Your Name']);
-            console.log('Demo contacts created');
+            if (process.env.NODE_ENV !== 'production') console.log('Demo contacts created');
             saveDatabase();
         }
     }
@@ -263,10 +265,12 @@ async function initDatabase() {
         const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || require('crypto').randomBytes(16).toString('hex');
         const hashedPassword = bcrypt.hashSync(defaultPassword, 10);
         db.run("INSERT INTO users (username, password) VALUES (?, ?)", ['admin', hashedPassword]);
-        console.log('Default admin user created');
-        if (!process.env.ADMIN_DEFAULT_PASSWORD) {
-            console.log('Generated admin password:', defaultPassword);
-            console.log('Set ADMIN_DEFAULT_PASSWORD in .env to use a fixed password.');
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('Default admin user created');
+            if (!process.env.ADMIN_DEFAULT_PASSWORD) {
+                console.log('Generated admin password:', defaultPassword);
+                console.log('Set ADMIN_DEFAULT_PASSWORD in .env to use a fixed password.');
+            }
         }
         saveDatabase();
     }
@@ -345,7 +349,9 @@ app.get('/api/csrf-token', csrfProtection, (req, res) => {
 
 app.use((err, req, res, next) => {
     if (err.code === 'EBADCSRFTOKEN') {
-        console.warn('CSRF attack detected:', req.ip, req.path);
+        if (process.env.NODE_ENV !== 'production') {
+            console.warn('CSRF attack detected:', req.ip, req.path);
+        }
         return res.status(403).json({ error: 'Invalid CSRF token' });
     }
     next(err);
@@ -436,13 +442,22 @@ app.get('/api/auth/status', (req, res) => {
 app.locals.dbHelpers = dbHelpers;
 app.locals.requireAuth = requireAuth;
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Start server
 initDatabase().then(() => {
     app.listen(PORT, () => {
-        console.log('\n========================================');
-        console.log('  Sky Admin Panel');
-        console.log('  http://localhost:' + PORT);
-        console.log('========================================\n');
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('\n========================================');
+            console.log('  Sky Admin Panel');
+            console.log('  http://localhost:' + PORT);
+            console.log('========================================\n');
+        } else {
+            console.log(`Sky API started on port ${PORT}`);
+        }
     });
 }).catch(err => {
     console.error('Failed to initialize database:', err);

@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 address.textContent = addr || address.textContent;
             }
         } catch (e) {
-            console.log('Failed to load contacts:', e.message);
+            // Contacts API unavailable
         }
     }
 
