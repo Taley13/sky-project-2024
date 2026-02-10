@@ -1,0 +1,80 @@
+{
+    "meta": {
+        "title": "SKY — Premium Web Development",
+        "description": "We build websites that elevate your brand"
+    },
+    "nav": {
+        "home": "Home",
+        "services": "Services",
+        "contacts": "Contact"
+    },
+    "hero": {
+        "title": "WHERE YOUR IDEAS<br><span class=\"hero-accent\">REACH THE SKY</span>",
+        "subtitle": "We craft premium websites that work for your business. From concept to launch — flawlessly.",
+        "button_services": "Our Services",
+        "button_contact": "Contact Us"
+    },
+    "features": {
+        "title": "WHY SKY",
+        "f1_title": "Craftsmanship",
+        "f1_desc": "Every project is handmade. No templates, only a tailor-made approach",
+        "f2_title": "Precision",
+        "f2_desc": "Pixel-perfect design and clean code. Details make all the difference",
+        "f3_title": "Reliability",
+        "f3_desc": "Post-launch support and guaranteed stability for your website",
+        "f4_title": "Transparency",
+        "f4_desc": "Fixed pricing with no surprises. You know what you pay for before we start"
+    },
+    "hexagons": {
+        "title": "OUR SOLUTIONS"
+    },
+    "cta": {
+        "title": "Ready for takeoff?",
+        "subtitle": "Tell us about your project — first consultation is free",
+        "button": "Start a Project"
+    },
+    "services": {
+        "title": "Our Services",
+        "subtitle": "Browse our complete catalog",
+        "all": "All",
+        "search_placeholder": "Search products...",
+        "no_results": "No results found"
+    },
+    "contacts": {
+        "title": "Contact Us",
+        "subtitle": "We'd love to hear from you",
+        "phone_label": "Phone",
+        "email_label": "Email",
+        "address_label": "Address",
+        "form_name": "Name",
+        "form_name_ph": "Your name",
+        "form_phone": "Phone",
+        "form_phone_ph": "Your phone number",
+        "form_email": "Email",
+        "form_email_ph": "Your email",
+        "form_message": "Message",
+        "form_message_ph": "How can we help you?",
+        "form_submit": "Send Message",
+        "form_success": "Thank you! We'll get back to you soon."
+    },
+    "footer": {
+        "description": "Web development studio. We build websites that elevate brands and deliver results.",
+        "nav_title": "Navigation",
+        "contact_title": "Contact"
+    },
+    "configurator": {
+        "title": "Build Your Perfect Website",
+        "subtitle": "Choose the modules you need in 3 simple steps",
+        "step1": "Site Type",
+        "step2": "Modules",
+        "step3": "Contact",
+        "step4": "Summary",
+        "prev": "Back",
+        "next": "Next",
+        "submit": "Send Request",
+        "popular": "Most Popular",
+        "fast": "Fastest",
+        "success_title": "Thank you for your request!",
+        "success_message": "We have received your configuration and will contact you shortly. Expect a call at the phone number you provided."
+    }
+}

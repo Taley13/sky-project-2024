@@ -1,0 +1,80 @@
+{
+    "meta": {
+        "title": "SKY — Premium-Webentwicklung",
+        "description": "Wir bauen Websites, die Ihre Marke stärken"
+    },
+    "nav": {
+        "home": "Startseite",
+        "services": "Leistungen",
+        "contacts": "Kontakt"
+    },
+    "hero": {
+        "title": "WO IHRE IDEEN<br><span class=\"hero-accent\">DEN HIMMEL ERREICHEN</span>",
+        "subtitle": "Wir entwickeln Premium-Websites, die für Ihr Unternehmen arbeiten. Vom Konzept bis zum Launch — makellos.",
+        "button_services": "Unsere Leistungen",
+        "button_contact": "Kontakt aufnehmen"
+    },
+    "features": {
+        "title": "WARUM SKY",
+        "f1_title": "Handwerk",
+        "f1_desc": "Jedes Projekt ist Handarbeit. Keine Vorlagen, nur ein maßgeschneiderter Ansatz",
+        "f2_title": "Präzision",
+        "f2_desc": "Pixel-perfektes Design und sauberer Code. Details machen den Unterschied",
+        "f3_title": "Zuverlässigkeit",
+        "f3_desc": "Support nach dem Launch und garantierte Stabilität für Ihre Website",
+        "f4_title": "Transparenz",
+        "f4_desc": "Festpreise ohne Überraschungen. Sie wissen vor dem Start, wofür Sie zahlen"
+    },
+    "hexagons": {
+        "title": "UNSERE LÖSUNGEN"
+    },
+    "cta": {
+        "title": "Bereit zum Abheben?",
+        "subtitle": "Erzählen Sie uns von Ihrem Projekt — Erstberatung kostenlos",
+        "button": "Projekt starten"
+    },
+    "services": {
+        "title": "Unsere Leistungen",
+        "subtitle": "Durchsuchen Sie unseren Katalog",
+        "all": "Alle",
+        "search_placeholder": "Suchen...",
+        "no_results": "Keine Ergebnisse gefunden"
+    },
+    "contacts": {
+        "title": "Kontakt",
+        "subtitle": "Wir freuen uns von Ihnen zu horen",
+        "phone_label": "Telefon",
+        "email_label": "E-Mail",
+        "address_label": "Adresse",
+        "form_name": "Name",
+        "form_name_ph": "Ihr Name",
+        "form_phone": "Telefon",
+        "form_phone_ph": "Ihre Telefonnummer",
+        "form_email": "E-Mail",
+        "form_email_ph": "Ihre E-Mail",
+        "form_message": "Nachricht",
+        "form_message_ph": "Wie konnen wir Ihnen helfen?",
+        "form_submit": "Nachricht senden",
+        "form_success": "Vielen Dank! Wir melden uns bald."
+    },
+    "footer": {
+        "description": "Webentwicklungsstudio. Wir bauen Websites, die Marken stärken und Ergebnisse liefern.",
+        "nav_title": "Navigation",
+        "contact_title": "Kontakt"
+    },
+    "configurator": {
+        "title": "Erstellen Sie Ihre perfekte Website",
+        "subtitle": "Wahlen Sie die benotigten Module in 3 einfachen Schritten",
+        "step1": "Website-Typ",
+        "step2": "Module",
+        "step3": "Kontakt",
+        "step4": "Zusammenfassung",
+        "prev": "Zuruck",
+        "next": "Weiter",
+        "submit": "Anfrage senden",
+        "popular": "Beliebteste",
+        "fast": "Schnellste",
+        "success_title": "Vielen Dank fur Ihre Anfrage!",
+        "success_message": "Wir haben Ihre Konfiguration erhalten und werden uns in Kurze bei Ihnen melden. Erwarten Sie einen Anruf unter der angegebenen Telefonnummer."
+    }
+}

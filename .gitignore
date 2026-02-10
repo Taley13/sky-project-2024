@@ -1,0 +1,9 @@
+node_modules/
+admin-panel/node_modules/
+admin-panel/.env
+admin-panel/database.sqlite
+admin-panel/uploads/*
+!admin-panel/uploads/.gitkeep
+*.log
+.DS_Store
+PROJECT_CONFIG.md

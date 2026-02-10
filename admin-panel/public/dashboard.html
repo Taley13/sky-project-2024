@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Babylon Admin</title>
+    <link rel="stylesheet" href="css/admin.css?v=1768238956">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">B</span>
+                    <span class="logo-text">Babylon Admin</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-admin-only>
+                        <a href="#dashboard" data-section="dashboard">
+                            <span class="nav-icon">&#9632;</span>
+                            <span class="nav-text" data-i18n="home">Главная</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-admin-only>
+                        <a href="#contacts" data-section="contacts">
+                            <span class="nav-icon">&#9742;</span>
+                            <span class="nav-text" data-i18n="contacts">Контакты</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-admin-only>
+                        <a href="#categories" data-section="categories">
+                            <span class="nav-icon">&#9776;</span>
+                            <span class="nav-text" data-i18n="categories">Категории</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-admin-only>
+                        <a href="#hexagons" data-section="hexagons">
+                            <span class="nav-icon">⬡</span>
+                            <span class="nav-text" data-i18n="nav.hexagons">Hexagons</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#products" data-section="products">
+                            <span class="nav-icon">&#128230;</span>
+                            <span class="nav-text" data-i18n="productsServices">Товары и услуги</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-admin-only>
+                        <a href="#orders" data-section="orders">
+                            <span class="nav-icon">&#9993;</span>
+                            <span class="nav-text" data-i18n="orders">Заявки</span>
+                            <span class="nav-badge" id="ordersCount" style="display: none;">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-admin-only>
+                        <a href="#settings" data-section="settings">
+                            <span class="nav-icon">&#9881;</span>
+                            <span class="nav-text" data-i18n="settings">Настройки</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-admin-only>
+                        <a href="#users" data-section="users">
+                            <span class="nav-icon">&#128101;</span>
+                            <span class="nav-text" data-i18n="users">Пользователи</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-admin-only>
+                        <a href="#audit" data-section="audit">
+                            <span class="nav-icon">&#128203;</span>
+                            <span class="nav-text" data-i18n="auditLog">Журнал действий</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-logout">
+                    <span class="nav-icon">&#10140;</span>
+                    <span data-i18n="logout">Выйти</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="top-bar-title">
+                    <select id="siteSelector" class="site-selector">
+                        <option value="babylon" data-i18n="babylonSelector">Babylon - Спецтехника</option>
+                        <!-- HIDDEN 2026-01-12: Mattress site deactivated -->
+                        <!-- <option value="mattress" data-i18n="mattressSelector">Матрасы</option> -->
+                        <!-- To restore: uncomment line above -->
+                    </select>
+                    <h1 id="pageTitle" data-i18n="pageTitle">Главная</h1>
+                </div>
+                <div class="lang-switcher">
+                    <button class="lang-btn active" data-lang="ru">RU</button>
+                </div>
+                <div class="top-bar-user">
+                    <span id="userName">admin</span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Dashboard Section -->
+                <section id="section-dashboard" class="content-section active">
+                    <div class="dashboard-welcome">
+                        <h2 data-i18n="welcome">Добро пожаловать в панель управления</h2>
+                        <p data-i18n="selectSection">Выберите раздел в меню слева для начала работы</p>
+                    </div>
+
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">&#9881;</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statProducts">0</span>
+                                <span class="stat-label" data-i18n="productsCount">Товаров</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">&#9776;</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statCategories">0</span>
+                                <span class="stat-label" data-i18n="categoriesCount">Категорий</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">&#9993;</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="statOrders">0</span>
+                                <span class="stat-label" data-i18n="ordersCount">Заявок</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-sites">
+                        <h3 data-i18n="managedSites">Управляемые сайты</h3>
+                        <div class="sites-grid" id="sitesGrid"></div>
+                    </div>
+
+                    <!-- Statistics Section -->
+                    <div class="dashboard-charts">
+                        <h3 data-i18n="statistics">Статистика</h3>
+                        <div class="charts-grid">
+                            <div class="chart-card">
+                                <h4 data-i18n="ordersChart">Заявки за последние 7 дней</h4>
+                                <canvas id="ordersChart"></canvas>
+                            </div>
+                            <div class="chart-card">
+                                <h4 data-i18n="popularProducts">Популярные товары</h4>
+                                <div id="popularProductsList" class="popular-products-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contacts Section -->
+                <section id="section-contacts" class="content-section">
+                    <div class="section-header">
+                        <h2 data-i18n="contactsManagement">Управление контактами</h2>
+                        <p data-i18n="contactsDescription">Редактируйте контактные данные сайта Babylon Aleks Group</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="contactsForm" class="form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contactPhone" data-i18n="phone">Телефон *</label>
+                                    <input type="tel" id="contactPhone" name="phone" placeholder="+48 XXX XXX XXX" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactEmail">Email *</label>
+                                    <input type="email" id="contactEmail" name="email" placeholder="info@example.com" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contactAddress" data-i18n="addressCity">Адрес (город, страна)</label>
+                                    <input type="text" id="contactAddress" name="address" placeholder="90-448 Lodz, Polska">
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactAddress2" data-i18n="addressStreet">Адрес (улица)</label>
+                                    <input type="text" id="contactAddress2" name="address_line2" placeholder="ul. Example 1/2">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contactNip">NIP</label>
+                                    <input type="text" id="contactNip" name="nip" placeholder="1234567890">
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactTelegram">Telegram</label>
+                                    <input type="url" id="contactTelegram" name="telegram" placeholder="https://t.me/username">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactPerson" data-i18n="contactPerson">Контактное лицо</label>
+                                <input type="text" id="contactPerson" name="contact_person" placeholder="Имя Фамилия">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-text" data-i18n="saveChanges">Сохранить изменения</span>
+                                    <span class="btn-loader" style="display: none;">
+                                        <span class="spinner"></span>
+                                    </span>
+                                </button>
+                                <span id="contactsSaveStatus" class="save-status"></span>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Hexagons Section -->
+                <section id="section-hexagons" class="content-section">
+                    <div class="section-header">
+                        <h2>Homepage Hexagons</h2>
+                        <p>Manage hexagon categories displayed on homepage</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Hexagons</h3>
+                            <button class="btn btn-primary btn-sm" data-action="showHexagonModal">+ Add Hexagon</button>
+                        </div>
+                        <div id="hexagonsList" class="categories-list"></div>
+                    </div>
+
+                    <!-- Hexagon Modal -->
+                    <div id="hexagonModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 id="hexagonModalTitle">Add Hexagon</h3>
+                                <button class="modal-close" data-action="closeHexagonModal">&times;</button>
+                            </div>
+                            <form id="hexagonForm">
+                                <div class="modal-body">
+                                    <input type="hidden" id="hexagonId">
+
+                                    <div class="form-group">
+                                        <label for="hexagonKey">
+                                            <span class="key-icon">🔑</span>
+                                            <span>System Key</span>
+                                        </label>
+                                        <input type="text" id="hexagonKey" placeholder="ebikes" required>
+                                        <small class="form-hint">Unique identifier for the hexagon</small>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="hexagonNameEn">
+                                                <span class="lang-flag">🇬🇧</span>
+                                                <span>Name EN *</span>
+                                            </label>
+                                            <input type="text" id="hexagonNameEn" placeholder="E-bikes" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="hexagonNameDe">
+                                                <span class="lang-flag">🇩🇪</span>
+                                                <span>Name DE</span>
+                                            </label>
+                                            <input type="text" id="hexagonNameDe" placeholder="E-Bikes">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="hexagonNameRu">
+                                                <span class="lang-flag">🇷🇺</span>
+                                                <span>Name RU</span>
+                                            </label>
+                                            <input type="text" id="hexagonNameRu" placeholder="Электро-велосипеды">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="hexagonIcon">
+                                                <span class="icon-label">🔢</span>
+                                                <span>Icon Number</span>
+                                            </label>
+                                            <input type="number" id="hexagonIcon" min="1" max="10" placeholder="1">
+                                            <small class="form-hint">Number from 1 to 10</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-action="closeHexagonModal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categories Section -->
+                <section id="section-categories" class="content-section">
+                    <div class="section-header">
+                        <h2 data-i18n="categoriesManagement">Управление категориями</h2>
+                        <p data-i18n="categoriesDescription">Добавляйте, редактируйте и сортируйте категории товаров</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 data-i18n="categories">Категории</h3>
+                            <button class="btn btn-primary btn-sm" data-action="showCategoryModal" data-i18n="add">+ Добавить</button>
+                        </div>
+                        <div id="categoriesList" class="categories-list"></div>
+                    </div>
+
+                    <!-- Category Modal -->
+                    <div id="categoryModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 id="categoryModalTitle" data-i18n="addCategory">Добавить категорию</h3>
+                                <button class="modal-close" data-action="closeCategoryModal">&times;</button>
+                            </div>
+                            <form id="categoryForm">
+                                <div class="modal-body">
+                                    <input type="hidden" id="categoryId">
+
+                                    <!-- Основное название (английский) - ПЕРВОЕ -->
+                                    <div class="form-group">
+                                        <label for="categoryNameEn">
+                                            <span class="lang-flag">🇬🇧</span>
+                                            <span data-i18n="nameEN">Название EN *</span>
+                                        </label>
+                                        <input type="text" id="categoryNameEn" placeholder="Scooter rental" required>
+                                        <small class="form-hint" data-i18n="categoryNameEnHint">Основное название категории (обязательно)</small>
+                                    </div>
+
+                                    <!-- Системный ключ - автогенерируется -->
+                                    <div class="form-group">
+                                        <label for="categoryKey">
+                                            <span class="key-icon">🔑</span>
+                                            <span data-i18n="systemKey">Системный ключ</span>
+                                        </label>
+                                        <input type="text" id="categoryKey" placeholder="scooter-rental" readonly class="input-readonly">
+                                        <small class="form-hint" data-i18n="categoryKeyHint">Генерируется автоматически из английского названия</small>
+                                        <small class="form-hint form-hint-error" id="categoryKeyError" style="display: none;"></small>
+                                    </div>
+
+                                    <div class="form-divider">
+                                        <span data-i18n="translations">Переводы (опционально)</span>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="categoryNameEn">
+                                                <span class="lang-flag">🇬🇧</span>
+                                                <span data-i18n="nameEN">Название EN</span>
+                                            </label>
+                                            <input type="text" id="categoryNameEn" placeholder="Scooter rental">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="categoryNameDe">
+                                                <span class="lang-flag">🇩🇪</span>
+                                                <span data-i18n="nameDE">Название DE</span>
+                                            </label>
+                                            <input type="text" id="categoryNameDe" placeholder="Rollerverleih">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="categoryNameRu">
+                                                <span class="lang-flag">🇷🇺</span>
+                                                <span data-i18n="nameRU">Название RU</span>
+                                            </label>
+                                            <input type="text" id="categoryNameRu" placeholder="Аренда самокатов">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="categoryIcon">
+                                                <span class="icon-label">📷</span>
+                                                <span data-i18n="iconNumber">Номер иконки</span>
+                                            </label>
+                                            <input type="text" id="categoryIcon" placeholder="9" maxlength="2">
+                                            <small class="form-hint" data-i18n="iconHint">Число от 1 до 10</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Предпросмотр -->
+                                    <div class="category-preview" id="categoryPreview">
+                                        <div class="preview-title" data-i18n="preview">Предпросмотр:</div>
+                                        <div class="preview-card">
+                                            <span class="preview-icon" id="previewIcon">9</span>
+                                            <div class="preview-names">
+                                                <strong id="previewNamePl">-</strong>
+                                                <small id="previewKey">-</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-action="closeCategoryModal" data-i18n="cancel">Отмена</button>
+                                    <button type="submit" class="btn btn-primary" data-i18n="save">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Products Section -->
+                <section id="section-products" class="content-section">
+                    <div class="section-header">
+                        <h2 data-i18n="productsManagement">Управление товарами и услугами</h2>
+                        <p data-i18n="productsDescription">Добавляйте и редактируйте карточки техники и услуг</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="products-filter">
+                                <select id="productCategoryFilter" class="filter-select">
+                                    <option value="" data-i18n="allCategories">Все категории</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-sm" data-action="showProductModal" data-i18n="add">+ Добавить</button>
+                        </div>
+                        <div id="productsList" class="products-grid"></div>
+                    </div>
+
+                    <!-- Product Modal -->
+                    <div id="productModal" class="modal">
+                        <div class="modal-content modal-lg">
+                            <div class="modal-header">
+                                <h3 id="productModalTitle" data-i18n="addProduct">Добавить товар/услугу</h3>
+                                <button class="modal-close" data-action="closeProductModal">&times;</button>
+                            </div>
+                            <form id="productForm" enctype="multipart/form-data">
+                                <div class="modal-body">
+                                    <input type="hidden" id="productId">
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="productKey" data-i18n="key">Ключ (англ.) *</label>
+                                            <input type="text" id="productKey" placeholder="mini-excavator-cat" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="productCategory" data-i18n="category">Категория</label>
+                                            <select id="productCategory">
+                                                <option value="" data-i18n="selectCategory">-- Выберите --</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" id="subcategoryTypeGroup" style="display:none;">
+                                            <label for="productSubcategoryType">Тип кузова (для машин)</label>
+                                            <select id="productSubcategoryType">
+                                                <option value="">-</option>
+                                                <option value="sedan">Sedan</option>
+                                                <option value="hatchback">Hatchback</option>
+                                                <option value="universal">Universal</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="productPrice" data-i18n="price">Цена (за день)</label>
+                                            <input type="text" id="productPrice" placeholder="от 500 zł">
+                                        </div>
+                                        <div class="form-group">
+                                            <label data-i18n="image">Изображение</label>
+                                            <div class="image-upload">
+                                                <input type="file" id="productImage" accept="image/*" id="productImage">
+                                                <div id="productImagePreview" class="image-preview"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="lang-tabs">
+                                        <button type="button" class="lang-tab active" data-action="switchProductLang" data-lang="en">EN</button>
+                                        <button type="button" class="lang-tab" data-action="switchProductLang" data-lang="de">DE</button>
+                                        <button type="button" class="lang-tab" data-action="switchProductLang" data-lang="ru">RU</button>
+                                    </div>
+
+                                    <div id="productLangEn" class="lang-content">
+                                        <div class="form-group">
+                                            <label>Title (EN)</label>
+                                            <input type="text" id="productTitleEn">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Subtitle (EN)</label>
+                                            <input type="text" id="productSubtitleEn">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Description (EN)</label>
+                                            <textarea id="productDescriptionEn" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Advantages (EN)</label>
+                                            <textarea id="productAdvantagesEn" rows="2" placeholder="One per line"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Specs (EN)</label>
+                                            <textarea id="productSpecsEn" rows="2" placeholder="Name: Value (each on new line)"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div id="productLangDe" class="lang-content">
+                                        <div class="form-group">
+                                            <label>Titel (DE)</label>
+                                            <input type="text" id="productTitleDe">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Untertitel (DE)</label>
+                                            <input type="text" id="productSubtitleDe">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Beschreibung (DE)</label>
+                                            <textarea id="productDescriptionDe" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Vorteile (DE)</label>
+                                            <textarea id="productAdvantagesDe" rows="2" placeholder="Einer pro Zeile"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Spezifikationen (DE)</label>
+                                            <textarea id="productSpecsDe" rows="2" placeholder="Name: Wert (jede auf neuer Zeile)"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div id="productLangRu" class="lang-content">
+                                        <div class="form-group">
+                                            <label>Название (RU)</label>
+                                            <input type="text" id="productTitleRu">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Подзаголовок (RU)</label>
+                                            <input type="text" id="productSubtitleRu">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Описание (RU)</label>
+                                            <textarea id="productDescriptionRu" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Преимущества (RU)</label>
+                                            <textarea id="productAdvantagesRu" rows="2" placeholder="Одно на строку"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Характеристики (RU)</label>
+                                            <textarea id="productSpecsRu" rows="2" placeholder="Название: Значение (каждое на новой строке)"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-action="closeProductModal" data-i18n="cancel">Отмена</button>
+                                    <button type="submit" class="btn btn-primary" data-i18n="save">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Orders Section -->
+                <section id="section-orders" class="content-section">
+                    <div class="section-header">
+                        <h2 data-i18n="ordersHistory">История заявок</h2>
+                        <p data-i18n="ordersDescription">Просмотр и управление заявками с сайта</p>
+                    </div>
+
+                    <div class="orders-stats">
+                        <div class="stat-card stat-new">
+                            <div class="stat-icon">&#128276;</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="ordersStatNew">0</span>
+                                <span class="stat-label" data-i18n="new">Новые</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-progress">
+                            <div class="stat-icon">&#9881;</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="ordersStatProgress">0</span>
+                                <span class="stat-label" data-i18n="inProgress">В работе</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-done">
+                            <div class="stat-icon">&#10003;</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="ordersStatDone">0</span>
+                                <span class="stat-label" data-i18n="completed">Завершены</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="orders-filter">
+                                <input type="text" id="orderSearchInput" class="filter-search" placeholder="Поиск по имени, телефону, email..." data-i18n-placeholder="searchOrders">
+                                <select id="orderStatusFilter" class="filter-select">
+                                    <option value="all" data-i18n="allStatuses">Все статусы</option>
+                                    <option value="new" data-i18n="new">Новые</option>
+                                    <option value="in_progress" data-i18n="inProgress">В работе</option>
+                                    <option value="completed" data-i18n="completed">Завершены</option>
+                                </select>
+                            </div>
+                            <span class="orders-total" id="ordersTotal" data-i18n="total">Всего: 0</span>
+                        </div>
+                        <div id="ordersList" class="orders-table-container">
+                            <table class="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="date">Дата</th>
+                                        <th data-i18n="name">Имя</th>
+                                        <th data-i18n="phone">Телефон</th>
+                                        <th data-i18n="period">Период</th>
+                                        <th data-i18n="status">Статус</th>
+                                        <th data-i18n="actions">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody"></tbody>
+                            </table>
+                        <div class="pagination-controls" id="ordersPagination" style="display: none;">
+                            <button id="ordersPrevBtn" class="btn btn-secondary">← Назад</button>
+                            <span id="ordersPageInfo" class="page-info">Страница 1</span>
+                            <button id="ordersNextBtn" class="btn btn-secondary">Вперед →</button>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Details Modal -->
+                    <div id="orderModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 data-i18n="orderDetails">Детали заявки</h3>
+                                <button class="modal-close" data-action="closeOrderModal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="order-details">
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="dateLabel">Дата:</span>
+                                        <span id="orderDetailDate"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="nameLabel">Имя:</span>
+                                        <span id="orderDetailName"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="phoneLabel">Телефон:</span>
+                                        <span id="orderDetailPhone"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label">Email:</span>
+                                        <span id="orderDetailEmail"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="rentalPeriod">Период аренды:</span>
+                                        <span id="orderDetailPeriod"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="pageLabel">Страница:</span>
+                                        <span id="orderDetailPage"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="productLabel">Товар:</span>
+                                        <span id="orderDetailProduct"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="commentLabel">Комментарий:</span>
+                                        <span id="orderDetailComment"></span>
+                                    </div>
+                                    <div class="order-detail-row">
+                                        <span class="label" data-i18n="statusLabel">Статус:</span>
+                                        <select id="orderDetailStatus" class="filter-select">
+                                            <option value="new" data-i18n="statusNew">Новая</option>
+                                            <option value="in_progress" data-i18n="statusInProgress">В работе</option>
+                                            <option value="completed" data-i18n="statusCompleted">Завершена</option>
+                                        </select>
+                                    </div>
+                                    <div class="order-detail-row order-notes-row">
+                                        <span class="label" data-i18n="notesLabel">Заметки:</span>
+                                        <textarea id="orderDetailNotes" class="order-notes-textarea" placeholder="Внутренние заметки по заявке..." rows="3"></textarea>
+                                        <small class="form-hint" data-i18n="notesHint">Только для внутреннего использования</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-action="deleteCurrentOrder" data-i18n="delete">Удалить</button>
+                                <button type="button" class="btn btn-primary" data-action="saveOrderStatus" data-i18n="save">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="section-settings" class="content-section">
+                    <div class="section-header">
+                        <h2 data-i18n="settings">Настройки</h2>
+                        <p data-i18n="settingsDescription">Настройки интеграции с Telegram</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Telegram Bot</h3>
+                        </div>
+                        <form id="settingsForm">
+                            <div class="form-group">
+                                <label for="telegramBotToken">Bot Token</label>
+                                <input type="text" id="telegramBotToken" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz">
+                                <small class="form-hint" data-i18n="botTokenHint">Получите токен у @BotFather в Telegram</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="telegramChatId">Chat ID</label>
+                                <input type="text" id="telegramChatId" placeholder="-1001234567890">
+                                <small class="form-hint" data-i18n="chatIdHint">ID чата или канала для получения заявок</small>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" data-i18n="save">Сохранить</button>
+                                <button type="button" class="btn btn-secondary" data-action="testTelegram" data-i18n="testSend">Тест отправки</button>
+                                <span id="settingsSaveStatus" class="save-status"></span>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 data-i18n="setupInstructions">Инструкция по настройке</h3>
+                        </div>
+                        <div class="settings-help">
+                            <ol>
+                                <li data-i18n="instruction1">Откройте <strong>@BotFather</strong> в Telegram</li>
+                                <li data-i18n="instruction2">Отправьте команду <code>/newbot</code></li>
+                                <li data-i18n="instruction3">Следуйте инструкциям и скопируйте токен бота</li>
+                                <li data-i18n="instruction4">Добавьте бота в группу или канал</li>
+                                <li data-i18n="instruction5">Получите Chat ID (можно использовать @userinfobot)</li>
+                                <li data-i18n="instruction6">Вставьте данные в форму выше и нажмите "Тест отправки"</li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Section (Admin Only) -->
+                <section id="section-users" class="content-section">
+                    <div class="section-header">
+                        <h2 data-i18n="usersManagement">Управление пользователями</h2>
+                        <p data-i18n="usersDescription">Добавляйте и управляйте пользователями системы</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 data-i18n="users">Пользователи</h3>
+                            <button class="btn btn-primary btn-sm" data-action="showUserModal" data-i18n="add">+ Добавить</button>
+                        </div>
+                        <div id="usersList" class="users-table-container">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="login">Логин</th>
+                                        <th data-i18n="role">Роль</th>
+                                        <th data-i18n="created">Создан</th>
+                                        <th data-i18n="actions">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody"></tbody>
+                            </table>
+                        <div class="pagination-controls" id="ordersPagination" style="display: none;">
+                            <button id="ordersPrevBtn" class="btn btn-secondary">← Назад</button>
+                            <span id="ordersPageInfo" class="page-info">Страница 1</span>
+                            <button id="ordersNextBtn" class="btn btn-secondary">Вперед →</button>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- User Modal -->
+                    <div id="userModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 id="userModalTitle" data-i18n="addUser">Добавить пользователя</h3>
+                                <button class="modal-close" data-action="closeUserModal">&times;</button>
+                            </div>
+                            <form id="userForm">
+                                <div class="modal-body">
+                                    <input type="hidden" id="userId">
+                                    <div class="form-group">
+                                        <label for="userUsername" data-i18n="loginLabel">Логин *</label>
+                                        <input type="text" id="userUsername" placeholder="username" required>
+                                    </div>
+                                    <div class="form-group" id="userPasswordGroup">
+                                        <label for="userPassword" data-i18n="passwordLabel">Пароль *</label>
+                                        <input type="password" id="userPassword" placeholder="Минимум 6 символов" minlength="6">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="userRole" data-i18n="roleLabel">Роль *</label>
+                                        <select id="userRole" required>
+                                            <option value="admin" data-i18n="administrator">Администратор</option>
+                                            <option value="accountant" data-i18n="accountant">Бухгалтер</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-action="closeUserModal" data-i18n="cancel">Отмена</button>
+                                    <button type="submit" class="btn btn-primary" data-i18n="save">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Password Change Modal -->
+                    <div id="passwordModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 data-i18n="changePassword">Сменить пароль</h3>
+                                <button class="modal-close" data-action="closePasswordModal">&times;</button>
+                            </div>
+                            <form id="passwordForm">
+                                <div class="modal-body">
+                                    <input type="hidden" id="passwordUserId">
+                                    <div class="form-group">
+                                        <label for="newPassword" data-i18n="newPassword">Новый пароль *</label>
+                                        <input type="password" id="newPassword" placeholder="Минимум 6 символов" minlength="6" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-action="closePasswordModal" data-i18n="cancel">Отмена</button>
+                                    <button type="submit" class="btn btn-primary" data-i18n="save">Сохранить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Audit Log Section (Admin Only) -->
+                <section id="section-audit" class="content-section">
+                    <div class="section-header">
+                        <h2 data-i18n="auditLog">Журнал действий</h2>
+                        <p data-i18n="auditDescription">История всех изменений в системе</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="audit-filters">
+                                <select id="auditActionFilter" class="filter-select">
+                                    <option value="" data-i18n="allActions">Все действия</option>
+                                </select>
+                                <select id="auditEntityFilter" class="filter-select">
+                                    <option value="" data-i18n="allEntities">Все объекты</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="loadAuditLog()" data-i18n="refresh">Обновить</button>
+                        </div>
+                        <div id="auditLogList" class="audit-log-container">
+                            <table class="audit-table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="date">Дата</th>
+                                        <th data-i18n="user">Пользователь</th>
+                                        <th data-i18n="action">Действие</th>
+                                        <th data-i18n="object">Объект</th>
+                                        <th data-i18n="details">Детали</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditTableBody"></tbody>
+                            </table>
+                        <div class="pagination-controls" id="ordersPagination" style="display: none;">
+                            <button id="ordersPrevBtn" class="btn btn-secondary">← Назад</button>
+                            <span id="ordersPageInfo" class="page-info">Страница 1</span>
+                            <button id="ordersNextBtn" class="btn btn-secondary">Вперед →</button>
+                        </div>
+                        </div>
+                        <div class="audit-pagination">
+                            <button class="btn btn-sm" onclick="loadAuditLog(currentAuditOffset - 50)" id="auditPrevBtn" disabled>&larr; Назад</button>
+                            <span id="auditPageInfo">1-50</span>
+                            <button class="btn btn-sm" onclick="loadAuditLog(currentAuditOffset + 50)" id="auditNextBtn">Вперед &rarr;</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="js/admin.js?v=1768238956"></script>
+    <script src="js/dashboard.js?v=1768238956"></script>
+</body>
+</html>
