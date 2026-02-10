@@ -365,44 +365,69 @@ img { max-width: 100%; height: auto; }
     font-size: clamp(2.2rem, 5vw, 3.2rem);
     font-weight: 500;
     margin-bottom: 48px;
-    line-height: 1.5;
+    line-height: 1.6;
     letter-spacing: 0.04em;
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
+    padding: 20px 30px;
+    background: linear-gradient(135deg, rgba(91, 159, 217, 0.08) 0%, rgba(91, 159, 217, 0.03) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(91, 159, 217, 0.2);
+    border-radius: 12px;
     color: rgba(255, 254, 249, 0.95);
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    filter: drop-shadow(0 8px 20px rgba(91, 159, 217, 0.15));
+    box-shadow:
+        0 0 40px rgba(91, 159, 217, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.hero-subtitle::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle at center, rgba(91, 159, 217, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(35px);
 }
 
 /* Glass effect for Sky word with backlighting */
 .hero-subtitle span {
     font-weight: 700;
-    font-size: 1.15em;
-    color: #5B9FD9;
+    font-size: 1.2em;
+    background: linear-gradient(135deg, #5B9FD9 0%, #7CB8E6 50%, #4A8FCC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     position: relative;
     display: inline-block;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, rgba(91, 159, 217, 0.15) 0%, rgba(123, 184, 230, 0.1) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(91, 159, 217, 0.3);
+    padding: 6px 14px;
+    border: 1px solid rgba(91, 159, 217, 0.4);
     border-radius: 8px;
+    background: linear-gradient(135deg, rgba(91, 159, 217, 0.2) 0%, rgba(123, 184, 230, 0.12) 100%);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     box-shadow:
-        0 0 40px rgba(91, 159, 217, 0.6),
-        0 0 80px rgba(91, 159, 217, 0.4),
-        inset 0 1px 2px rgba(255, 255, 255, 0.3),
-        inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-    text-shadow: 0 0 20px rgba(91, 159, 217, 0.8);
+        0 0 30px rgba(91, 159, 217, 0.5),
+        0 0 60px rgba(91, 159, 217, 0.25),
+        inset 0 1px 2px rgba(255, 255, 255, 0.25),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.15);
+    text-shadow: 0 0 16px rgba(91, 159, 217, 0.7);
+    color: #5B9FD9;
 }
 
 .hero-subtitle span::before {
     content: '';
     position: absolute;
-    inset: -20px;
-    background: radial-gradient(circle, rgba(91, 159, 217, 0.3) 0%, transparent 70%);
+    inset: -15px;
+    background: radial-gradient(circle, rgba(91, 159, 217, 0.25) 0%, transparent 70%);
     border-radius: 50%;
     z-index: -1;
-    filter: blur(30px);
+    filter: blur(25px);
 }
 
 .hero-buttons {
