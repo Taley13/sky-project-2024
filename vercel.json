@@ -1,6 +1,0 @@
-{
-  "framework": "static",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/frontend/$1" }
-  ]
-}
