@@ -7,6 +7,7 @@
     --primary-light: #4A3F38;
     --secondary-color: #B8956A;
     --accent-color: #D4C4B0;
+    --sky-blue: #5B9FD9;
     --text-color: #2B2520;
     --text-light: #6B5D54;
     --bg-color: #FFFEF9;
@@ -17,8 +18,8 @@
     --shadow-lg: 0 8px 32px rgba(43, 37, 32, 0.12);
     --radius: 2px;
     --radius-sm: 2px;
-    --font-main: 'Georgia', 'Crimson Text', 'Times New Roman', serif;
-    --font-heading: 'Cormorant Garamond', 'Playfair Display', 'Georgia', serif;
+    --font-main: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    --font-heading: 'Poppins', 'Inter', sans-serif;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -31,7 +32,8 @@ body {
     font-family: var(--font-main);
     color: var(--text-color);
     background: var(--bg-color);
-    line-height: 1.75;
+    font-size: 21px;
+    line-height: 1.85;
     letter-spacing: 0.02em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -88,14 +90,20 @@ img { max-width: 100%; height: auto; }
     font-size: 1.3em;
     font-family: var(--font-heading);
     letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+}
+
+.logo:hover .logo-text {
+    text-shadow: 0 0 12px rgba(91, 159, 217, 0.4);
+    transform: translateY(-2px);
 }
 
 .logo-text {
-    font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    font-family: 'Poppins', 'Inter', sans-serif;
     font-size: 1.6rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.25em;
-    color: var(--secondary-color);
+    color: var(--sky-blue);
     text-transform: uppercase;
 }
 
@@ -109,7 +117,7 @@ img { max-width: 100%; height: auto; }
 
 .nav-link {
     font-weight: 400;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     padding: 8px 0;
     position: relative;
     transition: var(--transition);
@@ -307,11 +315,11 @@ img { max-width: 100%; height: auto; }
 
 .hero-title {
     font-family: var(--font-heading);
-    font-size: clamp(2.8rem, 6.5vw, 5rem);
+    font-size: clamp(3.8rem, 8.5vw, 6.2rem);
     font-weight: 400;
     margin-bottom: 0;
-    line-height: 1.1;
-    letter-spacing: 0.04em;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
     color: rgba(255, 254, 249, 0.9);
 }
 
@@ -339,14 +347,14 @@ img { max-width: 100%; height: auto; }
 }
 
 .hero-subtitle {
-    font-size: clamp(1.05rem, 2vw, 1.25rem);
-    opacity: 0.7;
+    font-size: clamp(1.35rem, 2.8vw, 1.8rem);
+    opacity: 0.75;
     margin-bottom: 48px;
-    line-height: 1.8;
-    letter-spacing: 0.03em;
+    line-height: 1.85;
+    letter-spacing: 0.01em;
     font-weight: 400;
     font-style: italic;
-    max-width: 540px;
+    max-width: 560px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -397,14 +405,14 @@ img { max-width: 100%; height: auto; }
 /* === Buttons === */
 .btn {
     display: inline-block;
-    padding: 14px 36px;
+    padding: 17px 44px;
     border-radius: var(--radius);
     font-weight: 400;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     font-family: var(--font-main);
     border: 1px solid;
@@ -461,15 +469,14 @@ section {
 
 .section-title {
     font-family: var(--font-heading);
-    font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 400;
     text-align: center;
     margin-bottom: 72px;
     color: var(--text-color);
-    letter-spacing: 0.05em;
-    line-height: 1.3;
+    letter-spacing: 0.03em;
+    line-height: 1.35;
     text-transform: uppercase;
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(2.1rem, 4.2vw, 3rem);
 }
 
 /* === Features === */
@@ -517,18 +524,18 @@ section {
 }
 
 .feature-card h3 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 500;
     margin-bottom: 16px;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     font-family: var(--font-heading);
 }
 
 .feature-card p {
     color: var(--text-light);
-    font-size: 1rem;
-    line-height: 1.75;
-    letter-spacing: 0.02em;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    letter-spacing: 0.01em;
 }
 
 /* === Hexagons === */
@@ -570,9 +577,9 @@ section {
     color: var(--secondary-color);
 }
 .hexagon-item .hex-name {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 400;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
     font-family: var(--font-heading);
 }
 
@@ -587,18 +594,18 @@ section {
 
 .cta-section h2 {
     font-family: var(--font-heading);
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-size: clamp(2.4rem, 5.2vw, 3.4rem);
     margin-bottom: 20px;
     font-weight: 400;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
 }
 
 .cta-section p {
-    opacity: 0.75;
+    opacity: 0.8;
     margin-bottom: 40px;
-    font-size: 1.15rem;
+    font-size: 1.45rem;
     font-style: italic;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
 }
 
 /* === Footer === */
@@ -619,10 +626,10 @@ section {
 .footer-col h4 {
     color: var(--bg-color);
     margin-bottom: 20px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-family: var(--font-heading);
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
 }
 
 .footer-col ul { list-style: none; }
@@ -664,18 +671,18 @@ section {
 
 .page-header h1 {
     font-family: var(--font-heading);
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2.6rem, 6.2vw, 4.2rem);
     font-weight: 400;
     margin-bottom: 16px;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
 }
 
 .page-header p {
-    opacity: 0.75;
-    font-size: 1.15rem;
+    opacity: 0.8;
+    font-size: 1.45rem;
     font-style: italic;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.01em;
 }
 
 /* === Simple Animations === */
