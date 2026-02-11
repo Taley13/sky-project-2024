@@ -404,12 +404,13 @@ img { max-width: 100%; height: auto; }
 
 .hero-image {
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 85%;
-    max-height: 70vh;
+    max-width: 90%;
+    max-height: 65vh;
     object-fit: contain;
+    object-position: center;
     animation: fadeInScale 0.8s ease-out;
     z-index: 1;
 }
@@ -431,7 +432,7 @@ img { max-width: 100%; height: auto; }
     justify-content: center;
     flex-wrap: wrap;
     position: absolute;
-    bottom: 60px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 11;
@@ -879,7 +880,8 @@ section {
     .hero-scroll-hint { display: none; }
     .hero-glow { width: 350px; height: 350px; }
     .hero .btn { padding: 12px 32px; font-size: 0.8rem; }
-    .hero-image { max-width: 95%; max-height: 50vh; }
+    .hero-image { top: 40%; max-width: 95%; max-height: 45vh; }
+    .hero-buttons { bottom: 70px; }
 
     .features-grid { grid-template-columns: 1fr; }
 }
