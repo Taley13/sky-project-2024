@@ -28,6 +28,17 @@
     "hexagons": {
         "title": "OUR SOLUTIONS"
     },
+    "portfolio": {
+        "title": "OUR PORTFOLIO",
+        "subtitle": "Projects we're proud of",
+        "filter_all": "All",
+        "filter_ecommerce": "E-Commerce",
+        "filter_corporate": "Corporate",
+        "filter_landing": "Landing",
+        "view_details": "View Details",
+        "view_project": "View",
+        "visit_site": "Visit Website"
+    },
     "cta": {
         "title": "Ready for takeoff?",
         "subtitle": "Tell us about your project — first consultation is free",

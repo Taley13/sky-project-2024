@@ -31,6 +31,58 @@ module.exports = function(db) {
         res.json(hexagons);
     });
 
+    // Get visible portfolio projects for a site
+    router.get('/portfolio/:site', (req, res) => {
+        const { site } = req.params;
+        const { category } = req.query;
+
+        let sql = `SELECT * FROM portfolio_projects WHERE site = ? AND visible = 1`;
+        const params = [site];
+
+        if (category) {
+            sql += ' AND category = ?';
+            params.push(category);
+        }
+
+        sql += ' ORDER BY sort_order';
+
+        try {
+            const projects = db.all(sql, params);
+
+            // Get translations and images for each project
+            const result = projects.map(project => {
+                const translations = db.all(
+                    'SELECT * FROM portfolio_translations WHERE project_id = ?',
+                    [project.id]
+                );
+
+                const images = db.all(
+                    'SELECT * FROM portfolio_images WHERE project_id = ? ORDER BY sort_order',
+                    [project.id]
+                );
+
+                return {
+                    ...project,
+                    technologies: project.technologies ? JSON.parse(project.technologies) : [],
+                    translations: translations.reduce((acc, t) => {
+                        acc[t.lang] = {
+                            title: t.title,
+                            subtitle: t.subtitle,
+                            description: t.description
+                        };
+                        return acc;
+                    }, {}),
+                    images: images
+                };
+            });
+
+            res.json(result);
+        } catch (e) {
+            console.error('Error fetching portfolio:', e);
+            res.json([]);
+        }
+    });
+
     // Get visible products for a site
     router.get('/products/:site', (req, res) => {
         const { site } = req.params;

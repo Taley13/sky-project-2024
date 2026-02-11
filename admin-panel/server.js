@@ -234,6 +234,38 @@ async function initDatabase() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS portfolio_projects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        site TEXT NOT NULL DEFAULT '${SITE_KEY}',
+        project_key TEXT NOT NULL UNIQUE,
+        cover_image TEXT,
+        project_url TEXT,
+        category TEXT,
+        technologies TEXT,
+        visible INTEGER DEFAULT 1,
+        sort_order INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS portfolio_translations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        project_id INTEGER NOT NULL,
+        lang TEXT NOT NULL,
+        title TEXT,
+        subtitle TEXT,
+        description TEXT,
+        FOREIGN KEY (project_id) REFERENCES portfolio_projects(id) ON DELETE CASCADE
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS portfolio_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        project_id INTEGER NOT NULL,
+        image_path TEXT NOT NULL,
+        caption TEXT,
+        sort_order INTEGER DEFAULT 0,
+        FOREIGN KEY (project_id) REFERENCES portfolio_projects(id) ON DELETE CASCADE
+    )`);
+
     // Create demo data only if INIT_DEMO_DATA=true
     if (process.env.INIT_DEMO_DATA === 'true') {
         const catCount = db.exec(`SELECT COUNT(*) FROM categories WHERE site = '${SITE_KEY}'`);
@@ -412,6 +444,9 @@ app.use('/api/settings', settingsRoutes(dbHelpers, requireAuth, requireAdmin));
 
 const publicRoutes = require('./routes/public');
 app.use('/api/public', publicRoutes(dbHelpers));
+
+const portfolioRoutes = require('./routes/portfolio');
+app.use('/api/portfolio', portfolioRoutes(dbHelpers, requireAuth, requireAdmin, upload));
 
 const telegramRoutes = require('./routes/telegram');
 app.use('/api/telegram', telegramRoutes(dbHelpers));

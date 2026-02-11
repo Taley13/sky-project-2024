@@ -28,6 +28,17 @@
     "hexagons": {
         "title": "НАШИ РЕШЕНИЯ"
     },
+    "portfolio": {
+        "title": "НАШЕ ПОРТФОЛИО",
+        "subtitle": "Проекты, которыми мы гордимся",
+        "filter_all": "Все",
+        "filter_ecommerce": "Интернет-магазины",
+        "filter_corporate": "Корпоративные",
+        "filter_landing": "Лендинги",
+        "view_details": "Подробнее",
+        "view_project": "Смотреть",
+        "visit_site": "Перейти на сайт"
+    },
     "cta": {
         "title": "Готовы к взлёту?",
         "subtitle": "Расскажите нам о своём проекте — первая консультация бесплатно",
