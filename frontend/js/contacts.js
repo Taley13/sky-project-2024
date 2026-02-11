@@ -15,14 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const phone = document.getElementById('contactPhone');
             const email = document.getElementById('contactEmail');
-            const address = document.getElementById('contactAddress');
 
-            if (phone && data.phone) phone.textContent = data.phone;
-            if (email && data.email) email.textContent = data.email;
-            if (address) {
-                const addr = [data.address, data.address_line2].filter(Boolean).join(', ');
-                address.textContent = addr || address.textContent;
-            }
+            if (phone && data.phone) phone.href = data.phone;
+            if (email && data.email) email.href = `mailto:${data.email}`;
         } catch (e) {
             // Contacts API unavailable
         }

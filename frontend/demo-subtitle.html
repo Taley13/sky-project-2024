@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtitle Style Demos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-blue: #5B9FD9;
+            --bg: #0f1419;
+            --text: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 2rem;
+        }
+
+        .demos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .demo-card {
+            background: rgba(37, 99, 235, 0.05);
+            border: 1px solid rgba(91, 159, 217, 0.2);
+            border-radius: 12px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .demo-card h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--sky-blue);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* ============ ВАРИАНТ 1: Минималистичный ============ */
+        .subtitle-v1 {
+            font-size: 0.9em;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--sky-blue);
+            position: relative;
+            transition: all 0.3s ease;
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 6px;
+            text-decoration-color: rgba(91, 159, 217, 0.3);
+            cursor: pointer;
+        }
+
+        .subtitle-v1:hover {
+            text-decoration-color: var(--sky-blue);
+            letter-spacing: 0.12em;
+        }
+
+        /* ============ ВАРИАНТ 2: Смелый с боксом ============ */
+        .subtitle-v2 {
+            font-size: 0.9em;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: white;
+            background: linear-gradient(135deg, #2563EB 0%, #3B8DD9 100%);
+            padding: 10px 20px;
+            border-radius: 6px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(37, 99, 235, 0.4);
+            cursor: pointer;
+        }
+
+        .subtitle-v2:hover {
+            box-shadow: 0 0 40px rgba(37, 99, 235, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* ============ ВАРИАНТ 3: Элегантный ============ */
+        .subtitle-v3 {
+            font-size: 0.88em;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--sky-blue);
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 8px 0;
+            border-bottom: 2px solid rgba(91, 159, 217, 0.3);
+            text-shadow: 0 2px 8px rgba(91, 159, 217, 0.2);
+            cursor: pointer;
+        }
+
+        .subtitle-v3:hover {
+            border-bottom-color: var(--sky-blue);
+            text-shadow: 0 4px 16px rgba(91, 159, 217, 0.4);
+            letter-spacing: 0.09em;
+        }
+
+        .button-section {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(91, 159, 217, 0.2);
+        }
+
+        .button-section h2 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563EB 0%, #3B8DD9 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .info {
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(91, 159, 217, 0.3);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .info h3 {
+            color: var(--sky-blue);
+            margin-bottom: 10px;
+        }
+
+        .info p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: rgba(224, 224, 224, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👀 ВЫБЕРИ СТИЛЬ ДЛЯ SUBTITLE</h1>
+
+        <div class="demos">
+            <!-- ВАРИАНТ 1 -->
+            <div class="demo-card">
+                <h3>Вариант 1</h3>
+                <h3 style="font-size: 0.7rem; color: rgba(224, 224, 224, 0.5); margin-top: -15px; margin-bottom: 30px;">Минималистичный</h3>
+                <div class="subtitle-v1">Профессиональное ТЗ</div>
+                <p style="font-size: 0.8rem; margin-top: 20px; color: rgba(224, 224, 224, 0.6); text-align: center;">Чистый, с подчеркиванием. Интерактив при наведении.</p>
+            </div>
+
+            <!-- ВАРИАНТ 2 -->
+            <div class="demo-card">
+                <h3>Вариант 2</h3>
+                <h3 style="font-size: 0.7rem; color: rgba(224, 224, 224, 0.5); margin-top: -15px; margin-bottom: 30px;">Смелый & Modern</h3>
+                <div class="subtitle-v2">Профессиональное ТЗ</div>
+                <p style="font-size: 0.8rem; margin-top: 20px; color: rgba(224, 224, 224, 0.6); text-align: center;">Яркий градиент с боксом. Поднимается на hover.</p>
+            </div>
+
+            <!-- ВАРИАНТ 3 -->
+            <div class="demo-card">
+                <h3>Вариант 3</h3>
+                <h3 style="font-size: 0.7rem; color: rgba(224, 224, 224, 0.5); margin-top: -15px; margin-bottom: 30px;">Элегантный</h3>
+                <div class="subtitle-v3">Профессиональное ТЗ</div>
+                <p style="font-size: 0.8rem; margin-top: 20px; color: rgba(224, 224, 224, 0.6); text-align: center;">Изящная граница снизу. Refined эффект при hover.</p>
+            </div>
+        </div>
+
+        <div class="button-section">
+            <h2>Какой вариант выбираешь?</h2>
+            <button class="btn" onclick="selectVariant(1)">✓ Вариант 1</button>
+            <button class="btn" onclick="selectVariant(2)">✓ Вариант 2</button>
+            <button class="btn" onclick="selectVariant(3)">✓ Вариант 3</button>
+        </div>
+
+        <div class="info">
+            <h3>💡 Подсказка</h3>
+            <p>Наводи на каждый текст и смотри как они реагируют на hover. Выбери тот, который тебе нравится больше всего!</p>
+        </div>
+    </div>
+
+    <script>
+        function selectVariant(num) {
+            alert(`Ты выбрал вариант ${num}! Сейчас я применю стили к сайту.`);
+            // После выбора мы применим выбранный стиль
+        }
+    </script>
+</body>
+</html>

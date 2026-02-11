@@ -36,9 +36,9 @@
 }
 
 .filter-btn.active {
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: var(--bg-color);
-    border-color: var(--primary-color);
+    border-color: var(--secondary-color);
 }
 
 /* Products grid */
@@ -104,28 +104,28 @@
 /* Мраморные текстуры для разных карточек */
 .product-card:nth-child(6n+1) .product-card-image {
     background:
-        linear-gradient(135deg, #FAF8F3 0%, #E8DED0 25%, #F5EFE6 50%, #DDD3C5 75%, #FAF8F3 100%);
+        linear-gradient(135deg, #E5EBF2 0%, #CED9E6 25%, #E8EEF5 50%, #B8C8D9 75%, #E5EBF2 100%);
     background-size: 400% 400%;
     background-position: 30% 50%;
 }
 
 .product-card:nth-child(6n+2) .product-card-image {
     background:
-        radial-gradient(ellipse at 30% 40%, #FFFEF9 0%, #E5DBCD 35%, #F0E8DC 70%, #D8CFC1 100%);
+        radial-gradient(ellipse at 30% 40%, #E8EDF5 0%, #CDDBE8 35%, #E0E8F2 70%, #BCC9D8 100%);
     background-size: 200% 200%;
     background-position: center;
 }
 
 .product-card:nth-child(6n+3) .product-card-image {
     background:
-        linear-gradient(60deg, #F5EFE6 0%, #D4C4B0 20%, #E8DED0 40%, #FFFEF9 60%, #DDD3C5 80%, #F5EFE6 100%);
+        linear-gradient(60deg, #E8EEF5 0%, #7CB8E6 20%, #CED9E6 40%, #E8EDF5 60%, #B8C8D9 80%, #E8EEF5 100%);
     background-size: 300% 300%;
     background-position: 60% 40%;
 }
 
 .product-card:nth-child(6n+4) .product-card-image {
     background:
-        conic-gradient(from 45deg at 50% 50%, #FAF8F3, #E0D6C8, #F5EFE6, #D4C4B0, #FFFEF9, #E8DED0, #FAF8F3);
+        conic-gradient(from 45deg at 50% 50%, #E5EBF2, #C0D0E0, #E8EEF5, #7CB8E6, #E8EDF5, #CED9E6, #E5EBF2);
     background-position: center;
 }
 
@@ -133,18 +133,18 @@
     background:
         repeating-linear-gradient(
             90deg,
-            #FAF8F3 0px,
-            #E8DED0 40px,
-            #F5EFE6 80px,
-            #DDD3C5 120px,
-            #FFFEF9 160px
+            #E5EBF2 0px,
+            #CED9E6 40px,
+            #E8EEF5 80px,
+            #B8C8D9 120px,
+            #E8EDF5 160px
         );
     background-position: 0 center;
 }
 
 .product-card:nth-child(6n+6) .product-card-image {
     background:
-        linear-gradient(145deg, #FFFEF9 0%, #B8956A 1%, #FAF8F3 3%, #E8DED0 25%, #F5EFE6 50%, #D4C4B0 75%, #FAF8F3 97%, #B8956A 99%, #FFFEF9 100%);
+        linear-gradient(145deg, #E8EDF5 0%, #5B7FA0 1%, #E5EBF2 3%, #CED9E6 25%, #E8EEF5 50%, #7CB8E6 75%, #E5EBF2 97%, #5B7FA0 99%, #E8EDF5 100%);
     background-size: 400% 400%;
     background-position: 50% 60%;
 }
@@ -155,9 +155,9 @@
     position: absolute;
     inset: 0;
     background-image:
-        radial-gradient(circle at 20% 30%, rgba(184, 149, 106, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 20% 30%, rgba(91, 159, 217, 0.05) 0%, transparent 50%),
         radial-gradient(circle at 80% 70%, rgba(107, 93, 84, 0.04) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(212, 196, 176, 0.06) 0%, transparent 80%);
+        radial-gradient(circle at 50% 50%, rgba(91, 159, 217, 0.06) 0%, transparent 80%);
     opacity: 0.8;
     pointer-events: none;
 }
@@ -168,9 +168,9 @@
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(135deg, transparent 40%, rgba(184, 149, 106, 0.15) 41%, transparent 42%),
-        linear-gradient(225deg, transparent 55%, rgba(184, 149, 106, 0.1) 56%, transparent 57%),
-        linear-gradient(315deg, transparent 65%, rgba(212, 196, 176, 0.12) 66%, transparent 67%);
+        linear-gradient(135deg, transparent 40%, rgba(91, 159, 217, 0.15) 41%, transparent 42%),
+        linear-gradient(225deg, transparent 55%, rgba(91, 159, 217, 0.1) 56%, transparent 57%),
+        linear-gradient(315deg, transparent 65%, rgba(91, 159, 217, 0.12) 66%, transparent 67%);
     opacity: 0.4;
     pointer-events: none;
 }
@@ -242,9 +242,9 @@
     text-align: center;
     padding: 14px 24px;
     background: transparent;
-    color: var(--primary-color);
+    color: var(--secondary-color);
     font-weight: 400;
-    border: 1px solid var(--primary-color);
+    border: 1px solid var(--secondary-color);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: var(--radius);
@@ -258,7 +258,7 @@
 }
 
 .product-card-btn:hover {
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: var(--bg-color);
     transform: translateY(-2px);
     box-shadow: var(--shadow);

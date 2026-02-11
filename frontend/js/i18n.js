@@ -1,12 +1,12 @@
 /**
  * Sky Template - i18n Internationalization System
- * Supports: EN, DE, RU
+ * Supports: EN, RU
  */
 class I18n {
     constructor() {
         this.translations = {};
         this.currentLang = localStorage.getItem('sky-lang') || window.SITE_CONFIG?.DEFAULT_LANG || 'en';
-        this.supportedLangs = window.SITE_CONFIG?.SUPPORTED_LANGS || ['en', 'de', 'ru'];
+        this.supportedLangs = window.SITE_CONFIG?.SUPPORTED_LANGS || ['en', 'ru'];
     }
 
     async load(lang) {

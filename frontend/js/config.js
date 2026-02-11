@@ -25,7 +25,7 @@ window.SITE_CONFIG = {
 
     // i18n
     DEFAULT_LANG: 'en',
-    SUPPORTED_LANGS: ['en', 'de', 'ru'],
+    SUPPORTED_LANGS: ['en', 'ru'],
 
     // Features
     ENABLE_SEARCH: true,

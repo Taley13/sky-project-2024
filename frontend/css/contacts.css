@@ -67,6 +67,13 @@
     transition: var(--transition);
     background: var(--bg-color);
     letter-spacing: 0.02em;
+    color: var(--text-color);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-light);
+    opacity: 0.6;
 }
 
 .form-group input:focus,
