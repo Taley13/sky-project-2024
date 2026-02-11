@@ -100,16 +100,17 @@ img { max-width: 100%; height: auto; }
 }
 
 .logo-text {
-    font-family: 'Poppins', 'Inter', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: 0.25em;
+    font-family: 'EB Garamond', serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
     color: #5B9FD9;
-    text-transform: uppercase;
     position: relative;
     z-index: 10;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 20px rgba(91, 159, 217, 0.3);
 }
 
 .logo-img { height: 40px; width: auto; }
