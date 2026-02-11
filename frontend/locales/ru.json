@@ -6,6 +6,7 @@
     "nav": {
         "home": "Главная",
         "services": "Услуги",
+        "portfolio": "Портфолио",
         "contacts": "Контакты"
     },
     "hero": {

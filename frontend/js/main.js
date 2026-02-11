@@ -10,6 +10,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const yearEl = document.getElementById('currentYear');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+    // === Smooth Scroll for Anchor Links ===
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href !== '#') {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    // Close mobile menu if open
+                    const navMenu = document.getElementById('navMenu');
+                    const hamburger = document.getElementById('hamburger');
+                    if (navMenu && hamburger) {
+                        navMenu.classList.remove('active');
+                        hamburger.classList.remove('active');
+                    }
+                }
+            }
+        });
+    });
+
     // === Scroll Progress Bar ===
     const progressBar = document.getElementById('scrollProgress');
     if (progressBar) {

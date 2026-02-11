@@ -6,6 +6,7 @@
     "nav": {
         "home": "Home",
         "services": "Services",
+        "portfolio": "Portfolio",
         "contacts": "Contact"
     },
     "hero": {
