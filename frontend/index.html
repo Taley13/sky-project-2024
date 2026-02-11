@@ -118,6 +118,37 @@
         </div>
     </section>
 
+    <!-- Portfolio Section -->
+    <section class="portfolio-section" id="portfolioSection">
+        <div class="container">
+            <h2 class="section-title" data-i18n="portfolio.title">OUR PORTFOLIO</h2>
+            <p class="portfolio-subtitle" data-i18n="portfolio.subtitle">Projects we're proud of</p>
+
+            <!-- Filter buttons -->
+            <div class="portfolio-filters" id="portfolioFilters">
+                <button class="portfolio-filter-btn active" data-category="all" data-i18n="portfolio.filter_all">All</button>
+                <button class="portfolio-filter-btn" data-category="e-commerce" data-i18n="portfolio.filter_ecommerce">E-Commerce</button>
+                <button class="portfolio-filter-btn" data-category="corporate" data-i18n="portfolio.filter_corporate">Corporate</button>
+                <button class="portfolio-filter-btn" data-category="landing" data-i18n="portfolio.filter_landing">Landing</button>
+            </div>
+
+            <div class="portfolio-grid" id="portfolioGrid">
+                <!-- Dynamic portfolio cards from API -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Modal -->
+    <div class="portfolio-modal" id="portfolioModal">
+        <div class="portfolio-modal-overlay"></div>
+        <div class="portfolio-modal-content">
+            <button class="portfolio-modal-close" id="portfolioModalClose">&times;</button>
+            <div class="portfolio-modal-body" id="portfolioModalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
