@@ -725,7 +725,7 @@ section {
 
 /* === CTA === */
 .cta-section {
-    background-image: url('images/arh.png');
+    background-image: url('../images/arh.png');
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
