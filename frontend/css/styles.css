@@ -68,10 +68,10 @@ img { max-width: 100%; height: auto; }
     left: 0;
     width: 100%;
     z-index: 1000;
-    background: rgba(26, 22, 18, 0.95);
+    background: rgba(10, 14, 22, 0.98);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 0.5px solid rgba(184, 149, 106, 0.15);
+    border-bottom: 0.5px solid rgba(91, 159, 217, 0.12);
     transition: var(--transition);
 }
 
