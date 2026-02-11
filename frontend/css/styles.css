@@ -157,8 +157,8 @@ img { max-width: 100%; height: auto; }
     position: absolute;
     top: 100%;
     left: 0;
-    background: rgba(26, 22, 18, 0.97);
-    border: 0.5px solid rgba(184, 149, 106, 0.15);
+    background: rgba(10, 14, 22, 0.98);
+    border: 0.5px solid rgba(91, 159, 217, 0.12);
     border-radius: var(--radius-sm);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     min-width: 220px;
@@ -168,6 +168,8 @@ img { max-width: 100%; height: auto; }
     transform: translateY(10px);
     transition: var(--transition);
     list-style: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .has-dropdown:hover .dropdown-menu {
