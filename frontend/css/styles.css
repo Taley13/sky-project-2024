@@ -725,11 +725,30 @@ section {
 
 /* === CTA === */
 .cta-section {
-    background: var(--bg-dark);
+    background-image: url('images/arh.png');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: var(--bg-color);
     text-align: center;
     border-top: 0.5px solid rgba(212, 196, 176, 0.2);
     border-bottom: 0.5px solid rgba(212, 196, 176, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(26, 22, 18, 0.82) 0%, rgba(43, 37, 32, 0.88) 50%, rgba(26, 22, 18, 0.85) 100%);
+    z-index: 1;
+}
+
+.cta-section .container {
+    position: relative;
+    z-index: 2;
 }
 
 .cta-section h2 {
@@ -738,14 +757,21 @@ section {
     margin-bottom: 20px;
     font-weight: 400;
     letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #D4B896 0%, #C9A96E 50%, #E5D0B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 4px 20px rgba(212, 184, 150, 0.3);
 }
 
 .cta-section p {
-    opacity: 0.8;
+    opacity: 0.95;
     margin-bottom: 40px;
     font-size: 1.45rem;
     font-style: italic;
     letter-spacing: 0.01em;
+    color: rgba(224, 224, 224, 0.9);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* === Footer === */
@@ -835,8 +861,7 @@ section {
     }
 }
 
-.page-header,
-.cta-section {
+.page-header {
     background: var(--bg-dark);
 }
 
@@ -882,6 +907,18 @@ section {
     .hero .btn { padding: 12px 32px; font-size: 0.8rem; }
     .hero-image { top: 40%; max-width: 95%; max-height: 45vh; }
     .hero-buttons { bottom: 70px; }
+
+    .cta-section {
+        background-attachment: scroll;
+    }
+
+    .cta-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .cta-section p {
+        font-size: 1.1rem;
+    }
 
     .features-grid { grid-template-columns: 1fr; }
 }
