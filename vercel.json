@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/admin-panel/server.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    },
+    {
+      "src": "frontend/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/admin-panel/server.js"
+    },
+    {
+      "src": "/health",
+      "dest": "backend/admin-panel/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
+  "env": {
+    "PORT": "3000",
+    "NODE_ENV": "production"
+  },
+  "buildCommand": "npm install --prefix backend/admin-panel"
+}

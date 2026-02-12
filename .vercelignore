@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+IMPROVEMENTS.md
+PROJECT_STATUS.md
+
+# Admin panel (not used in production)
+admin-panel/
+
+# Archives
+*.zip
+*.tar.gz
+
+# Environment
+.env.example
+.env.*.example
