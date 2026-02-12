@@ -390,19 +390,15 @@ app.use((err, req, res, next) => {
 });
 
 // Routes
-app.get('/', (req, res) => {
-    if (req.session && req.session.userId) {
-        res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-    } else {
-        res.sendFile(path.join(__dirname, 'public', 'login.html'));
-    }
-});
-
 app.get('/dashboard.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-app.use(express.static(path.join(__dirname, 'public'), { index: false }));
+app.get('/login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Auth middleware

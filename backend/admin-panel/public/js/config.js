@@ -9,7 +9,7 @@ const hostname = window.location.hostname;
 
 if (hostname === 'localhost' || hostname === '127.0.0.1') {
     // Local development
-    API_BASE_URL = 'http://localhost:4000/api';
+    API_BASE_URL = 'http://localhost:7001/api';
 } else if (hostname.includes('render.com')) {
     // Render.com production
     API_BASE_URL = `https://${hostname}/api`;

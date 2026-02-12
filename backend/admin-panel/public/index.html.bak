@@ -32,12 +32,12 @@
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
+            <a href="/" class="logo">
                 <span class="logo-text">Sky</span>
             </a>
 
             <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html" class="nav-link active" data-i18n="nav.home">Home</a></li>
+                <li><a href="/" class="nav-link active" data-i18n="nav.home">Home</a></li>
                 <li class="has-dropdown">
                     <a href="services.html" class="nav-link" data-i18n="nav.services">Services</a>
                     <ul class="dropdown-menu" id="categoriesDropdown">
@@ -54,50 +54,53 @@
                 <button class="lang-btn" data-lang="ru">RU</button>
             </div>
 
-            <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+            <div class="hamburger" id="hamburger">
                 <span></span><span></span><span></span>
-            </button>
+            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero" id="hero" aria-label="Hero section with call-to-action buttons">
-        <div class="hero-bg" aria-hidden="true">
+    <section class="hero" id="hero">
+        <div class="hero-bg">
             <div class="hero-gradient"></div>
             <div class="hero-grid-lines"></div>
             <div class="hero-glow"></div>
         </div>
-        <img src="images/hero.png" alt="Professional web development and design services showcase" class="hero-image">
+        <img src="images/hero.png" alt="Hero Image" class="hero-image">
         <div class="hero-content">
             <div class="hero-buttons">
                 <a href="services.html" class="btn btn-primary" data-i18n="hero.button_services">Our Services</a>
                 <a href="contacts.html" class="btn btn-secondary" data-i18n="hero.button_contact">Contact Us</a>
             </div>
         </div>
+        <div class="hero-scroll-hint">
+            <span></span>
+        </div>
     </section>
 
     <!-- Features Section -->
-    <section class="features" id="features" aria-label="Why choose SKY - Our core values">
+    <section class="features" id="features">
         <div class="container">
             <h2 class="section-title" data-i18n="features.title">WHY SKY</h2>
-            <div class="features-grid" role="region" aria-label="Features list">
+            <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon" aria-hidden="true">1</div>
+                    <div class="feature-icon">1</div>
                     <h3 data-i18n="features.f1_title">Craftsmanship</h3>
                     <p data-i18n="features.f1_desc">Every project is handmade. No templates, only a tailor-made approach</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon" aria-hidden="true">2</div>
+                    <div class="feature-icon">2</div>
                     <h3 data-i18n="features.f2_title">Precision</h3>
                     <p data-i18n="features.f2_desc">Pixel-perfect design and clean code. Details make all the difference</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon" aria-hidden="true">3</div>
+                    <div class="feature-icon">3</div>
                     <h3 data-i18n="features.f3_title">Reliability</h3>
                     <p data-i18n="features.f3_desc">Post-launch support and guaranteed stability for your website</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon" aria-hidden="true">4</div>
+                    <div class="feature-icon">4</div>
                     <h3 data-i18n="features.f4_title">Transparency</h3>
                     <p data-i18n="features.f4_desc">Fixed pricing with no surprises. You know what you pay for before we start</p>
                 </div>
@@ -106,17 +109,17 @@
     </section>
 
     <!-- Hexagons Section (categories icons) -->
-    <section class="hexagons-section" id="hexagonsSection" aria-label="Services and solutions offered">
+    <section class="hexagons-section" id="hexagonsSection">
         <div class="container">
             <h2 class="section-title" data-i18n="hexagons.title">OUR SOLUTIONS</h2>
-            <div class="hexagons-grid" id="hexagonsGrid" role="region" aria-label="Services list">
+            <div class="hexagons-grid" id="hexagonsGrid">
                 <!-- Dynamic hexagons from API -->
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section" aria-label="Call to action - Start your project">
+    <section class="cta-section">
         <div class="container">
             <h2 data-i18n="cta.title">Ready for takeoff?</h2>
             <p data-i18n="cta.subtitle">Tell us about your project — first consultation is free</p>
@@ -135,7 +138,7 @@
                 <div class="footer-col">
                     <h4 data-i18n="footer.nav_title">Navigation</h4>
                     <ul>
-                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="/" data-i18n="nav.home">Home</a></li>
                         <li><a href="services.html" data-i18n="nav.services">Services</a></li>
                         <li><a href="contacts.html" data-i18n="nav.contacts">Contact</a></li>
                     </ul>

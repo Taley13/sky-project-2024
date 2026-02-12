@@ -11,52 +11,70 @@ document.addEventListener('DOMContentLoaded', () => {
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     // === Smooth Scroll for Anchor Links ===
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            if (href !== '#') {
-                e.preventDefault();
-                const target = document.querySelector(href);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                    // Close mobile menu if open
-                    const navMenu = document.getElementById('navMenu');
-                    const hamburger = document.getElementById('hamburger');
-                    if (navMenu && hamburger) {
-                        navMenu.classList.remove('active');
-                        hamburger.classList.remove('active');
+    function setupAnchorLinks() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            // Clone to remove old listeners
+            const newAnchor = anchor.cloneNode(true);
+            anchor.parentNode.replaceChild(newAnchor, anchor);
+
+            newAnchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                        // Close mobile menu if open
+                        const navMenu = document.getElementById('navMenu');
+                        const hamburger = document.getElementById('hamburger');
+                        if (navMenu && hamburger) {
+                            navMenu.classList.remove('active');
+                            hamburger.classList.remove('active');
+                        }
                     }
                 }
-            }
+            });
         });
-    });
+    }
 
-    // === Scroll Progress Bar ===
+    setupAnchorLinks();
+
+    // === Scroll Progress Bar & Navbar ===
     const progressBar = document.getElementById('scrollProgress');
-    if (progressBar) {
-        window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+
+    const handleScroll = () => {
+        if (progressBar) {
             const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
             progressBar.style.width = scrolled + '%';
-        });
-    }
-
-    // === Navbar ===
-    const navbar = document.getElementById('navbar');
-    if (navbar) {
-        window.addEventListener('scroll', () => {
+        }
+        if (navbar) {
             navbar.classList.toggle('scrolled', window.scrollY > 50);
-        });
-    }
+        }
+    };
+
+    // Remove old listener and add fresh one
+    window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     // === Hamburger Menu ===
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('navMenu');
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            hamburger.classList.toggle('active');
-        });
+    function setupHamburgerMenu() {
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        if (hamburger && navMenu) {
+            // Clone to remove old listeners
+            const newHamburger = hamburger.cloneNode(true);
+            hamburger.parentNode.replaceChild(newHamburger, hamburger);
+
+            newHamburger.addEventListener('click', () => {
+                const isOpen = navMenu.classList.toggle('active');
+                newHamburger.classList.toggle('active');
+                newHamburger.setAttribute('aria-expanded', isOpen);
+            });
+        }
     }
+
+    setupHamburgerMenu();
 
     // === Load Categories Dropdown ===
     async function loadCategories() {
@@ -68,11 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const lang = (typeof i18n !== 'undefined') ? i18n.getCurrentLang() : 'en';
 
             dropdowns.forEach(dropdown => {
-                dropdown.innerHTML = '';
+                // Clear dropdown
+                while (dropdown.firstChild) {
+                    dropdown.removeChild(dropdown.firstChild);
+                }
                 categories.forEach(cat => {
                     const name = cat[`name_${lang}`] || cat.name_en || cat.key;
                     const li = document.createElement('li');
-                    li.innerHTML = `<a href="services.html#${cat.key}">${name}</a>`;
+                    const link = document.createElement('a');
+                    link.href = `services.html#${cat.key}`;
+                    link.textContent = name;
+                    li.appendChild(link);
                     dropdown.appendChild(li);
                 });
             });
@@ -83,8 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadCategories();
 
-    // Reload categories on language change
-    window.addEventListener('langChanged', () => loadCategories());
+    // Reload categories on language change (single listener)
+    const handleCategoryLanguageChange = () => {
+        loadCategories();
+        setupAnchorLinks();
+    };
+    window.removeEventListener('langChanged', handleCategoryLanguageChange);
+    window.addEventListener('langChanged', handleCategoryLanguageChange);
 
     // === Load Hexagons ===
     async function loadHexagons() {
@@ -98,15 +127,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const hexagons = await res.json();
             const lang = (typeof i18n !== 'undefined') ? i18n.getCurrentLang() : 'en';
 
-            grid.innerHTML = '';
+            // Clear grid
+            while (grid.firstChild) {
+                grid.removeChild(grid.firstChild);
+            }
+
             hexagons.forEach(hex => {
                 const name = hex[`name_${lang}`] || hex.name_en || hex.key;
                 const div = document.createElement('div');
                 div.className = 'hexagon-item';
-                div.innerHTML = `
-                    <span class="hex-icon">${hex.icon_number || ''}</span>
-                    <span class="hex-name">${name}</span>
-                `;
+
+                const icon = document.createElement('span');
+                icon.className = 'hex-icon';
+                icon.textContent = hex.icon_number || '';
+                div.appendChild(icon);
+
+                const hexName = document.createElement('span');
+                hexName.className = 'hex-name';
+                hexName.textContent = name;
+                div.appendChild(hexName);
+
                 div.addEventListener('click', () => {
                     window.location.href = `services.html#${hex.key}`;
                 });
@@ -118,7 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadHexagons();
-    window.addEventListener('langChanged', () => loadHexagons());
+
+    const handleHexagonLanguageChange = () => loadHexagons();
+    window.removeEventListener('langChanged', handleHexagonLanguageChange);
+    window.addEventListener('langChanged', handleHexagonLanguageChange);
 
     // === Load Footer Contacts ===
     async function loadContacts() {

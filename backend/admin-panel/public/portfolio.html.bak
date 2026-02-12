@@ -18,11 +18,11 @@
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
+            <a href="/" class="logo">
                 <span class="logo-text">Sky</span>
             </a>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html" class="nav-link" data-i18n="nav.home">Home</a></li>
+                <li><a href="/" class="nav-link" data-i18n="nav.home">Home</a></li>
                 <li class="has-dropdown">
                     <a href="services.html" class="nav-link" data-i18n="nav.services">Services</a>
                     <ul class="dropdown-menu" id="categoriesDropdown"></ul>
@@ -85,7 +85,7 @@
                 <div class="footer-col">
                     <h4 data-i18n="footer.nav_title">Navigation</h4>
                     <ul>
-                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="/" data-i18n="nav.home">Home</a></li>
                         <li><a href="services.html" data-i18n="nav.services">Services</a></li>
                         <li><a href="portfolio.html" data-i18n="nav.portfolio">Portfolio</a></li>
                         <li><a href="contacts.html" data-i18n="nav.contacts">Contact</a></li>

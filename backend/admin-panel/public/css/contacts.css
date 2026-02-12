@@ -1,0 +1,101 @@
+/* === Contacts Page Styles === */
+
+.contact-section { padding: 60px 0 80px; }
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: start;
+}
+
+.contact-info { display: flex; flex-direction: column; gap: 20px; }
+
+.info-card {
+    background: var(--bg-section);
+    padding: 32px 28px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-color);
+    border-left: 2px solid var(--secondary-color);
+    transition: var(--transition);
+}
+
+.info-card:hover {
+    border-left-color: var(--secondary-color);
+    box-shadow: var(--shadow);
+}
+
+.info-card h3 {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+}
+
+.info-card p {
+    font-size: 1.15rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--text-color);
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-group label {
+    font-weight: 400;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-light);
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 14px 20px;
+    border: 0.5px solid var(--border-color);
+    border-radius: var(--radius);
+    font-family: var(--font-main);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--bg-color);
+    letter-spacing: 0.02em;
+    color: var(--text-color);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-light);
+    opacity: 0.6;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: var(--shadow);
+}
+
+.form-success {
+    text-align: center;
+    padding: 48px;
+    background: var(--bg-section);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--secondary-color);
+    color: var(--text-color);
+    font-weight: 400;
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; }
+}

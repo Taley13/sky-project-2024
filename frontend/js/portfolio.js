@@ -4,11 +4,32 @@
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Wait for i18n to be ready
-    if (typeof i18n === 'undefined') {
-        setTimeout(() => location.reload(), 100);
-        return;
-    }
+    // Wait for i18n to be ready with timeout
+    let retries = 0;
+    const maxRetries = 50; // 5 seconds max wait
+
+    const waitForI18n = () => {
+        return new Promise((resolve) => {
+            if (typeof i18n !== 'undefined') {
+                resolve();
+                return;
+            }
+
+            const checkI18n = setInterval(() => {
+                retries++;
+                if (typeof i18n !== 'undefined') {
+                    clearInterval(checkI18n);
+                    resolve();
+                } else if (retries >= maxRetries) {
+                    clearInterval(checkI18n);
+                    console.error('i18n failed to load after 5 seconds');
+                    resolve(); // Continue anyway
+                }
+            }, 100);
+        });
+    };
+
+    await waitForI18n();
 
     const API = window.SITE_CONFIG?.API_BASE_URL || '/api';
     const SITE = window.SITE_CONFIG?.SITE_KEY || 'mybusiness';
@@ -29,10 +50,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             const projects = await res.json();
             const lang = i18n.getCurrentLang();
 
-            grid.innerHTML = '';
+            // Clear grid
+            while (grid.firstChild) {
+                grid.removeChild(grid.firstChild);
+            }
 
             if (projects.length === 0) {
-                grid.innerHTML = '<p style="text-align: center; color: var(--text-light); grid-column: 1/-1;">No projects yet</p>';
+                const noProjectsMsg = document.createElement('p');
+                noProjectsMsg.style.textAlign = 'center';
+                noProjectsMsg.style.color = 'var(--text-light)';
+                noProjectsMsg.style.gridColumn = '1 / -1';
+                noProjectsMsg.textContent = 'No projects yet';
+                grid.appendChild(noProjectsMsg);
                 return;
             }
 
@@ -43,35 +72,93 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const description = translation.description || '';
                 const technologies = project.technologies || [];
 
+                // Create card container
                 const card = document.createElement('div');
                 card.className = 'portfolio-card';
                 card.dataset.projectId = project.id;
 
-                card.innerHTML = `
-                    <div class="portfolio-card-image">
-                        ${project.cover_image ? `<img src="${API.replace('/api', '')}${project.cover_image}" alt="${title}">` : '<div style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-light);">No Image</div>'}
-                        <div class="portfolio-card-overlay">
-                            <span class="portfolio-card-overlay-text" data-i18n="portfolio.view_details">View Details</span>
-                        </div>
-                    </div>
-                    <div class="portfolio-card-content">
-                        <h3 class="portfolio-card-title">${title}</h3>
-                        ${subtitle ? `<p class="portfolio-card-subtitle">${subtitle}</p>` : ''}
-                        ${description ? `<p class="portfolio-card-description">${description}</p>` : ''}
-                        <div class="portfolio-card-footer">
-                            <div class="portfolio-card-technologies">
-                                ${technologies.slice(0, 3).map(tech => `<span class="portfolio-tech-tag">${tech}</span>`).join('')}
-                            </div>
-                            <a href="#" class="portfolio-card-link" data-i18n="portfolio.view_project">View</a>
-                        </div>
-                    </div>
-                `;
+                // Create image section
+                const imageDiv = document.createElement('div');
+                imageDiv.className = 'portfolio-card-image';
 
-                // Update translations in card
-                card.querySelectorAll('[data-i18n]').forEach(el => {
-                    const key = el.getAttribute('data-i18n');
-                    el.textContent = i18n.t(key);
+                if (project.cover_image) {
+                    const img = document.createElement('img');
+                    img.src = API.replace('/api', '') + project.cover_image;
+                    img.alt = title;
+                    imageDiv.appendChild(img);
+                } else {
+                    const noImageDiv = document.createElement('div');
+                    noImageDiv.style.height = '100%';
+                    noImageDiv.style.display = 'flex';
+                    noImageDiv.style.alignItems = 'center';
+                    noImageDiv.style.justifyContent = 'center';
+                    noImageDiv.style.color = 'var(--text-light)';
+                    noImageDiv.textContent = 'No Image';
+                    imageDiv.appendChild(noImageDiv);
+                }
+
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.className = 'portfolio-card-overlay';
+                const overlayText = document.createElement('span');
+                overlayText.className = 'portfolio-card-overlay-text';
+                overlayText.setAttribute('data-i18n', 'portfolio.view_details');
+                overlayText.textContent = i18n.t('portfolio.view_details');
+                overlay.appendChild(overlayText);
+                imageDiv.appendChild(overlay);
+                card.appendChild(imageDiv);
+
+                // Create content section
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'portfolio-card-content';
+
+                // Title
+                const titleEl = document.createElement('h3');
+                titleEl.className = 'portfolio-card-title';
+                titleEl.textContent = title;
+                contentDiv.appendChild(titleEl);
+
+                // Subtitle
+                if (subtitle) {
+                    const subtitleEl = document.createElement('p');
+                    subtitleEl.className = 'portfolio-card-subtitle';
+                    subtitleEl.textContent = subtitle;
+                    contentDiv.appendChild(subtitleEl);
+                }
+
+                // Description
+                if (description) {
+                    const descEl = document.createElement('p');
+                    descEl.className = 'portfolio-card-description';
+                    descEl.textContent = description;
+                    contentDiv.appendChild(descEl);
+                }
+
+                // Footer
+                const footer = document.createElement('div');
+                footer.className = 'portfolio-card-footer';
+
+                // Technologies
+                const techDiv = document.createElement('div');
+                techDiv.className = 'portfolio-card-technologies';
+                technologies.slice(0, 3).forEach(tech => {
+                    const tag = document.createElement('span');
+                    tag.className = 'portfolio-tech-tag';
+                    tag.textContent = tech;
+                    techDiv.appendChild(tag);
                 });
+                footer.appendChild(techDiv);
+
+                // Link
+                const link = document.createElement('a');
+                link.href = '#';
+                link.className = 'portfolio-card-link';
+                link.setAttribute('data-i18n', 'portfolio.view_project');
+                link.textContent = i18n.t('portfolio.view_project');
+                footer.appendChild(link);
+
+                contentDiv.appendChild(footer);
+                card.appendChild(contentDiv);
 
                 // Open modal on click
                 card.addEventListener('click', (e) => {
@@ -98,29 +185,67 @@ document.addEventListener('DOMContentLoaded', async () => {
         const description = translation.description || '';
         const technologies = project.technologies || [];
 
-        modalBody.innerHTML = `
-            <h2>${title}</h2>
-            ${subtitle ? `<h3>${subtitle}</h3>` : ''}
-            ${project.cover_image ? `<img src="${API.replace('/api', '')}${project.cover_image}" alt="${title}" class="portfolio-modal-image">` : ''}
-            ${description ? `<p>${description}</p>` : ''}
-            ${technologies.length > 0 ? `
-                <div class="portfolio-modal-technologies">
-                    ${technologies.map(tech => `<span class="portfolio-tech-tag">${tech}</span>`).join('')}
-                </div>
-            ` : ''}
-            ${project.project_url ? `
-                <a href="${project.project_url}" target="_blank" class="portfolio-modal-btn">
-                    <span data-i18n="portfolio.visit_site">Visit Website</span>
-                    <span>↗</span>
-                </a>
-            ` : ''}
-        `;
+        // Clear modal body
+        while (modalBody.firstChild) {
+            modalBody.removeChild(modalBody.firstChild);
+        }
 
-        // Update translations in modal
-        modalBody.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            el.textContent = i18n.t(key);
-        });
+        // Title
+        const titleEl = document.createElement('h2');
+        titleEl.textContent = title;
+        modalBody.appendChild(titleEl);
+
+        // Subtitle
+        if (subtitle) {
+            const subtitleEl = document.createElement('h3');
+            subtitleEl.textContent = subtitle;
+            modalBody.appendChild(subtitleEl);
+        }
+
+        // Image
+        if (project.cover_image) {
+            const img = document.createElement('img');
+            img.src = API.replace('/api', '') + project.cover_image;
+            img.alt = title;
+            img.className = 'portfolio-modal-image';
+            modalBody.appendChild(img);
+        }
+
+        // Description
+        if (description) {
+            const descEl = document.createElement('p');
+            descEl.textContent = description;
+            modalBody.appendChild(descEl);
+        }
+
+        // Technologies
+        if (technologies.length > 0) {
+            const techDiv = document.createElement('div');
+            techDiv.className = 'portfolio-modal-technologies';
+            technologies.forEach(tech => {
+                const tag = document.createElement('span');
+                tag.className = 'portfolio-tech-tag';
+                tag.textContent = tech;
+                techDiv.appendChild(tag);
+            });
+            modalBody.appendChild(techDiv);
+        }
+
+        // Link to project
+        if (project.project_url) {
+            const link = document.createElement('a');
+            link.href = project.project_url;
+            link.target = '_blank';
+            link.className = 'portfolio-modal-btn';
+            const linkText = document.createElement('span');
+            linkText.setAttribute('data-i18n', 'portfolio.visit_site');
+            linkText.textContent = i18n.t('portfolio.visit_site');
+            link.appendChild(linkText);
+            const arrow = document.createElement('span');
+            arrow.textContent = '↗';
+            link.appendChild(arrow);
+            modalBody.appendChild(link);
+        }
 
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -136,41 +261,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // === Portfolio Filters ===
-    const portfolioFilters = document.querySelectorAll('.portfolio-filter-btn');
-    portfolioFilters.forEach(btn => {
-        btn.addEventListener('click', () => {
-            portfolioFilters.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const category = btn.dataset.category;
-            loadPortfolio(category);
+    function setupFilterListeners() {
+        const portfolioFilters = document.querySelectorAll('.portfolio-filter-btn');
+        portfolioFilters.forEach(btn => {
+            // Remove old listener if exists
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
         });
-    });
 
-    // === Modal Close Handlers ===
+        // Add fresh listeners
+        const freshFilters = document.querySelectorAll('.portfolio-filter-btn');
+        freshFilters.forEach(btn => {
+            btn.addEventListener('click', () => {
+                freshFilters.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const category = btn.dataset.category;
+                loadPortfolio(category);
+            });
+        });
+    }
+
+    setupFilterListeners();
+
+    // === Modal Close Handlers (single instance) ===
     const portfolioModalClose = document.getElementById('portfolioModalClose');
     if (portfolioModalClose) {
-        portfolioModalClose.addEventListener('click', closePortfolioModal);
+        // Clone to remove old listeners
+        const newClose = portfolioModalClose.cloneNode(true);
+        portfolioModalClose.parentNode.replaceChild(newClose, portfolioModalClose);
+        newClose.addEventListener('click', closePortfolioModal);
     }
 
     const portfolioModal = document.getElementById('portfolioModal');
     if (portfolioModal) {
-        portfolioModal.querySelector('.portfolio-modal-overlay')?.addEventListener('click', closePortfolioModal);
-
-        // Close on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && portfolioModal.classList.contains('active')) {
-                closePortfolioModal();
-            }
-        });
+        const overlay = portfolioModal.querySelector('.portfolio-modal-overlay');
+        if (overlay) {
+            // Clone to remove old listeners
+            const newOverlay = overlay.cloneNode(true);
+            overlay.parentNode.replaceChild(newOverlay, overlay);
+            newOverlay.addEventListener('click', closePortfolioModal);
+        }
     }
+
+    // Close modal on Escape key (single listener)
+    const handleEscapeKey = (e) => {
+        if (e.key === 'Escape' && portfolioModal?.classList.contains('active')) {
+            closePortfolioModal();
+        }
+    };
+    document.removeEventListener('keydown', handleEscapeKey);
+    document.addEventListener('keydown', handleEscapeKey);
 
     // Load portfolio on page load
     loadPortfolio();
 
-    // Reload portfolio on language change
-    window.addEventListener('langChanged', () => {
+    // Reload portfolio on language change (single instance)
+    const handleLanguageChange = () => {
         const activeFilter = document.querySelector('.portfolio-filter-btn.active');
         const category = activeFilter ? activeFilter.dataset.category : 'all';
         loadPortfolio(category);
-    });
+        setupFilterListeners();
+    };
+    window.removeEventListener('langChanged', handleLanguageChange);
+    window.addEventListener('langChanged', handleLanguageChange);
 });
