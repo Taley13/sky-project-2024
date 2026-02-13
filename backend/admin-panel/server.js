@@ -89,6 +89,63 @@ function saveDatabase() {
     fs.writeFileSync(DB_PATH, buffer);
 }
 
+// ===== TELEGRAM HELPERS =====
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function sendTelegram(message) {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+    if (!token || !chatId) return;
+
+    const payload = JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML'
+    });
+
+    const options = {
+        hostname: 'api.telegram.org',
+        path: `/bot${token}/sendMessage`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(payload)
+        }
+    };
+
+    const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+            try {
+                const result = JSON.parse(data);
+                if (result.ok) {
+                    console.log('✓ Telegram message sent');
+                } else {
+                    console.error('Telegram API error:', result.description);
+                }
+            } catch (e) {
+                console.error('Telegram parse error:', e.message);
+            }
+        });
+    });
+
+    req.on('error', (err) => {
+        console.error('Telegram request error:', err.message);
+    });
+
+    req.write(payload);
+    req.end();
+}
+
 // ===== API ROUTES =====
 
 // Health check
@@ -96,7 +153,7 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Create lead (order)
+// Create lead (contact form)
 app.post('/api/orders', leadsLimiter, (req, res) => {
     const { name, phone, email, rental_period, comment, page, product_key } = req.body;
 
@@ -114,30 +171,85 @@ app.post('/api/orders', leadsLimiter, (req, res) => {
         saveDatabase();
 
         // Send to Telegram
-        if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) {
-            const message = `
-<b>🚀 New Lead!</b>
+        const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Warsaw' });
+        const message = [
+            `<b>📩 НОВАЯ ЗАЯВКА С САЙТА</b>`,
+            ``,
+            `<b>👤 Имя:</b> ${escapeHtml(name)}`,
+            `<b>📞 Телефон:</b> ${escapeHtml(phone)}`,
+            email ? `<b>📧 Email:</b> ${escapeHtml(email)}` : null,
+            page ? `<b>📍 Страница:</b> ${escapeHtml(page)}` : null,
+            product_key ? `<b>📦 Продукт:</b> ${escapeHtml(product_key)}` : null,
+            rental_period ? `<b>📅 Период:</b> ${escapeHtml(rental_period)}` : null,
+            comment ? `\n<b>💬 Сообщение:</b>\n${escapeHtml(comment)}` : null,
+            ``,
+            `<b>⏰</b> ${timestamp}`,
+        ].filter(Boolean).join('\n');
 
-<b>Name:</b> ${name}
-<b>Phone:</b> ${phone}
-${email ? `<b>Email:</b> ${email}\n` : ''}${rental_period ? `<b>Period:</b> ${rental_period}\n` : ''}${product_key ? `<b>Product:</b> ${product_key}\n` : ''}${page ? `<b>Page:</b> ${page}\n` : ''}${comment ? `<b>Comment:</b> ${comment}` : ''}
-            `.trim();
-
-            const encodedMessage = encodeURIComponent(message);
-            const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${encodedMessage}&parse_mode=HTML`;
-
-            https.get(url, () => {
-                console.log(`✓ Lead sent to Telegram: ${name}`);
-            }).on('error', (err) => {
-                console.error('Telegram error:', err.message);
-                // But order is saved, so we don't fail the response
-            });
-        }
+        sendTelegram(message);
 
         res.json({ success: true, message: 'Lead submitted successfully!' });
     } catch (error) {
         console.error('Error creating order:', error);
         res.status(500).json({ error: 'Failed to submit lead' });
+    }
+});
+
+// Configurator lead
+app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
+    const {
+        siteType, modules, package: pkg, discount, total, botConfig,
+        clientName, clientPhone, clientEmail, site, currency
+    } = req.body;
+
+    if (!clientName || !clientPhone) {
+        return res.status(400).json({ error: 'Name and phone are required' });
+    }
+
+    try {
+        // Build modules list for message
+        const curr = currency || 'EUR';
+        const modulesList = (modules || [])
+            .map(m => {
+                const name = m.name_ru || m.name_en || m.id || 'Module';
+                return `  • ${escapeHtml(name)} — ${m.price || 0} ${curr}`;
+            })
+            .join('\n');
+
+        const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Warsaw' });
+
+        const message = [
+            `<b>🔧 ЗАЯВКА С КОНФИГУРАТОРА</b>`,
+            ``,
+            `<b>👤 Клиент:</b> ${escapeHtml(clientName)}`,
+            `<b>📞 Телефон:</b> ${escapeHtml(clientPhone)}`,
+            clientEmail ? `<b>📧 Email:</b> ${escapeHtml(clientEmail)}` : null,
+            ``,
+            `<b>🌐 Тип сайта:</b> ${escapeHtml(siteType || 'Не указан')}`,
+            modulesList ? `\n<b>📦 Модули:</b>\n${modulesList}` : null,
+            pkg ? `\n<b>📋 Пакет:</b> ${escapeHtml(pkg)}` : null,
+            discount ? `<b>🏷 Скидка:</b> ${discount}%` : null,
+            total != null ? `<b>💰 Итого:</b> ${total} ${curr}` : null,
+            botConfig ? `\n<b>🤖 Telegram-бот:</b> ${escapeHtml(JSON.stringify(botConfig))}` : null,
+            ``,
+            `<b>⏰</b> ${timestamp}`,
+        ].filter(Boolean).join('\n');
+
+        sendTelegram(message);
+
+        // Save to database
+        const comment = `Configurator: ${siteType || ''} | Modules: ${(modules || []).length} | Total: ${total || 0} ${curr}`;
+        db.run(
+            `INSERT INTO orders (name, phone, email, comment, page, product_key, status)
+             VALUES (?, ?, ?, ?, ?, ?, 'new')`,
+            [clientName, clientPhone, clientEmail || '', comment, 'configurator', 'configurator', ]
+        );
+        saveDatabase();
+
+        res.json({ success: true, message: 'Configuration submitted successfully!' });
+    } catch (error) {
+        console.error('Error submitting configuration:', error);
+        res.status(500).json({ error: 'Failed to submit configuration' });
     }
 });
 
