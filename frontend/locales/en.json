@@ -38,7 +38,8 @@
         "filter_landing": "Landing",
         "view_details": "View Details",
         "view_project": "View",
-        "visit_site": "Visit Website"
+        "visit_site": "Visit Website",
+        "price_label": "Project cost"
     },
     "cta": {
         "title": "Ready for takeoff?",

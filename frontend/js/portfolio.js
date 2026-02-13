@@ -137,6 +137,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     contentDiv.appendChild(descEl);
                 }
 
+                // Price
+                if (project.price) {
+                    const priceDiv = document.createElement('div');
+                    priceDiv.className = 'portfolio-card-price';
+                    const priceLabel = document.createElement('span');
+                    priceLabel.className = 'portfolio-price-label';
+                    priceLabel.setAttribute('data-i18n', 'portfolio.price_label');
+                    priceLabel.textContent = i18n.t('portfolio.price_label');
+                    priceDiv.appendChild(priceLabel);
+                    const priceValue = document.createElement('span');
+                    priceValue.className = 'portfolio-price-value';
+                    priceValue.textContent = (project.currency || '€') + project.price.toLocaleString();
+                    priceDiv.appendChild(priceValue);
+                    contentDiv.appendChild(priceDiv);
+                }
+
                 // Footer
                 const footer = document.createElement('div');
                 footer.className = 'portfolio-card-footer';
@@ -210,6 +226,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             const descEl = document.createElement('p');
             descEl.textContent = description;
             modalBody.appendChild(descEl);
+        }
+
+        // Price in modal
+        if (project.price) {
+            const priceDiv = document.createElement('div');
+            priceDiv.className = 'portfolio-modal-price';
+            const priceLabel = document.createElement('span');
+            priceLabel.className = 'portfolio-price-label';
+            priceLabel.setAttribute('data-i18n', 'portfolio.price_label');
+            priceLabel.textContent = i18n.t('portfolio.price_label');
+            priceDiv.appendChild(priceLabel);
+            const priceValue = document.createElement('span');
+            priceValue.className = 'portfolio-price-value';
+            priceValue.textContent = (project.currency || '€') + project.price.toLocaleString();
+            priceDiv.appendChild(priceValue);
+            modalBody.appendChild(priceDiv);
         }
 
         // Technologies

@@ -38,7 +38,8 @@
         "filter_landing": "Лендинги",
         "view_details": "Подробнее",
         "view_project": "Смотреть",
-        "visit_site": "Перейти на сайт"
+        "visit_site": "Перейти на сайт",
+        "price_label": "Стоимость проекта"
     },
     "cta": {
         "title": "Готовы к взлёту?",

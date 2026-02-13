@@ -193,6 +193,46 @@
     overflow: hidden;
 }
 
+/* Portfolio Price */
+.portfolio-card-price {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    margin-bottom: 16px;
+    border-bottom: 0.5px solid var(--border-color);
+}
+
+.portfolio-price-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+}
+
+.portfolio-price-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    letter-spacing: 0.02em;
+}
+
+.portfolio-modal-price {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    background: rgba(91, 159, 217, 0.06);
+    border: 0.5px solid rgba(91, 159, 217, 0.15);
+    border-radius: var(--radius);
+}
+
+.portfolio-modal-price .portfolio-price-value {
+    font-size: 1.6rem;
+}
+
 .portfolio-card-footer {
     display: flex;
     justify-content: space-between;

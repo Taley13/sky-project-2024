@@ -7,6 +7,8 @@
       "cover_image": "",
       "project_url": "https://babylon-aleks-group.pl/",
       "technologies": ["HTML5", "CSS3", "JavaScript", "Responsive Design", "SEO"],
+      "price": 3000,
+      "currency": "€",
       "visible": true,
       "sort_order": 1,
       "translations": {
@@ -30,6 +32,8 @@
       "cover_image": "",
       "project_url": "https://zol-dub.online/",
       "technologies": ["Next.js", "React", "Node.js", "Responsive Design", "SEO"],
+      "price": 1500,
+      "currency": "€",
       "visible": true,
       "sort_order": 2,
       "translations": {
