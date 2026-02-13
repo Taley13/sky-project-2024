@@ -55,6 +55,8 @@
     "contacts": {
         "title": "Контакты",
         "subtitle": "Будем рады вашему обращению",
+        "telegram_label": "Telegram",
+        "bot_label": "Telegram-бот",
         "phone_label": "Телефон",
         "email_label": "Email",
         "address_label": "Адрес",
@@ -67,7 +69,7 @@
         "form_message": "Сообщение",
         "form_message_ph": "Чем мы можем помочь?",
         "form_submit": "Отправить",
-        "form_success": "Спасибо! Мы свяжемся с вами в ближайшее время."
+        "form_success": "Ваше сообщение отправлено в наш Telegram. Мы ответим в ближайшее время!"
     },
     "footer": {
         "description": "Студия веб-разработки. Создаём сайты, которые возвышают бренды и приносят результат.",

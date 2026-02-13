@@ -55,6 +55,8 @@
     "contacts": {
         "title": "Contact Us",
         "subtitle": "We'd love to hear from you",
+        "telegram_label": "Telegram",
+        "bot_label": "Telegram Bot",
         "phone_label": "Phone",
         "email_label": "Email",
         "address_label": "Address",
@@ -67,7 +69,7 @@
         "form_message": "Message",
         "form_message_ph": "How can we help you?",
         "form_submit": "Send Message",
-        "form_success": "Thank you! We'll get back to you soon."
+        "form_success": "Your message has been sent to our Telegram. We'll respond shortly!"
     },
     "footer": {
         "description": "Web development studio. We build websites that elevate brands and deliver results.",
