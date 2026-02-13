@@ -33,8 +33,8 @@ window.SITE_CONFIG = {
     ENABLE_HEXAGONS: true,
 
     // Fallback contacts (used if API unavailable)
-    FALLBACK_PHONE: '+XX XXX XXX XXX',
-    FALLBACK_EMAIL: '+1234567890',
+    FALLBACK_PHONE: 'Telegram: @SkyConfiguratorProBot',
+    FALLBACK_EMAIL: 'taleyaliev306@gmail.com',
 
     // Environment detection
     IS_PRODUCTION: hostname !== 'localhost' && hostname !== '127.0.0.1',
