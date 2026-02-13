@@ -86,36 +86,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 card.className = 'portfolio-card';
                 card.dataset.projectId = project.id;
 
-                // Create image section
-                const imageDiv = document.createElement('div');
-                imageDiv.className = 'portfolio-card-image';
+                // Create gradient header with category and visit button
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'portfolio-card-header';
+                headerDiv.dataset.category = project.category;
 
-                if (project.cover_image) {
-                    const img = document.createElement('img');
-                    img.src = project.cover_image;
-                    img.alt = title;
-                    imageDiv.appendChild(img);
-                } else {
-                    const noImageDiv = document.createElement('div');
-                    noImageDiv.style.height = '100%';
-                    noImageDiv.style.display = 'flex';
-                    noImageDiv.style.alignItems = 'center';
-                    noImageDiv.style.justifyContent = 'center';
-                    noImageDiv.style.color = 'var(--text-light)';
-                    noImageDiv.textContent = 'No Image';
-                    imageDiv.appendChild(noImageDiv);
+                const categoryLabel = document.createElement('span');
+                categoryLabel.className = 'portfolio-card-category';
+                const icons = { 'e-commerce': '\uD83D\uDED2', 'corporate': '\uD83C\uDFE2', 'landing': '\uD83D\uDE80' };
+                categoryLabel.textContent = (icons[project.category] || '\uD83D\uDCC1') + '  ' + project.category.toUpperCase();
+                headerDiv.appendChild(categoryLabel);
+
+                if (project.project_url) {
+                    const visitBtn = document.createElement('a');
+                    visitBtn.href = project.project_url;
+                    visitBtn.target = '_blank';
+                    visitBtn.rel = 'noopener noreferrer';
+                    visitBtn.className = 'portfolio-visit-btn';
+                    visitBtn.setAttribute('data-i18n', 'portfolio.visit_site');
+                    visitBtn.textContent = i18n.t('portfolio.visit_site') + ' \u2197';
+                    visitBtn.addEventListener('click', (e) => e.stopPropagation());
+                    headerDiv.appendChild(visitBtn);
                 }
 
-                // Create overlay
-                const overlay = document.createElement('div');
-                overlay.className = 'portfolio-card-overlay';
-                const overlayText = document.createElement('span');
-                overlayText.className = 'portfolio-card-overlay-text';
-                overlayText.setAttribute('data-i18n', 'portfolio.view_details');
-                overlayText.textContent = i18n.t('portfolio.view_details');
-                overlay.appendChild(overlayText);
-                imageDiv.appendChild(overlay);
-                card.appendChild(imageDiv);
+                card.appendChild(headerDiv);
 
                 // Create content section
                 const contentDiv = document.createElement('div');
@@ -209,15 +203,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const subtitleEl = document.createElement('h3');
             subtitleEl.textContent = subtitle;
             modalBody.appendChild(subtitleEl);
-        }
-
-        // Image
-        if (project.cover_image) {
-            const img = document.createElement('img');
-            img.src = project.cover_image;
-            img.alt = title;
-            img.className = 'portfolio-modal-image';
-            modalBody.appendChild(img);
         }
 
         // Description
