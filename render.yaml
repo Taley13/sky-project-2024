@@ -19,7 +19,7 @@ services:
       - key: ALLOWED_ORIGINS
         value: https://sky.example.com,https://your-render-instance.onrender.com
       - key: TELEGRAM_BOT_TOKEN
-        value: 7898780635:AAGhPCh0Nv0lkQi_4POwfuuKG5Lo_HjXcAM
+        sync: false
       - key: TELEGRAM_CHAT_ID
-        value: "277767867"
+        sync: false
     healthCheckPath: /api/health
