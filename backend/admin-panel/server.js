@@ -349,6 +349,8 @@ function buildTZMessages(data, orderId) {
     msg3Lines.push(``);
     msg3Lines.push(`💱 Валюта: ${curr}`);
     msg3Lines.push(`⏰ ${timestamp}`);
+    msg3Lines.push(``);
+    msg3Lines.push(`🔗 Собрано в: https://sky-project-2024.onrender.com/services.html`);
 
     const msg3 = msg3Lines.join('\n');
 
