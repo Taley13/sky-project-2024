@@ -40,14 +40,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!grid) return;
 
         try {
-            const url = category === 'all'
-                ? `${API}/public/portfolio/${SITE}`
-                : `${API}/public/portfolio/${SITE}?category=${category}`;
-
-            const res = await fetch(url);
+            // Load from static JSON instead of API
+            const res = await fetch('/data/portfolio-projects.json');
             if (!res.ok) return;
 
-            const projects = await res.json();
+            const data = await res.json();
+            let projects = data.projects || [];
+
+            // Client-side filtering by category
+            if (category !== 'all') {
+                projects = projects.filter(p => p.category === category && p.visible);
+            } else {
+                projects = projects.filter(p => p.visible);
+            }
+
+            // Sort by sort_order
+            projects.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
             const lang = i18n.getCurrentLang();
 
             // Clear grid
@@ -83,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (project.cover_image) {
                     const img = document.createElement('img');
-                    img.src = API.replace('/api', '') + project.cover_image;
+                    img.src = project.cover_image;
                     img.alt = title;
                     imageDiv.appendChild(img);
                 } else {
@@ -205,7 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Image
         if (project.cover_image) {
             const img = document.createElement('img');
-            img.src = API.replace('/api', '') + project.cover_image;
+            img.src = project.cover_image;
             img.alt = title;
             img.className = 'portfolio-modal-image';
             modalBody.appendChild(img);

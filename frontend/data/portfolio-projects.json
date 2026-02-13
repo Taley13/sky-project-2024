@@ -1,0 +1,73 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "project_key": "dental-ecommerce",
+      "category": "e-commerce",
+      "cover_image": "/images/portfolio/dental-ecommerce-cover.jpg",
+      "project_url": "https://example.com/dental",
+      "technologies": ["React", "Node.js", "PostgreSQL", "Stripe", "Tailwind CSS"],
+      "visible": true,
+      "sort_order": 1,
+      "translations": {
+        "en": {
+          "title": "DentalMarket - Professional Equipment Store",
+          "subtitle": "E-Commerce platform for dental professionals",
+          "description": "Full-featured online marketplace for dental equipment and supplies. Features include advanced product catalog, shopping cart, secure payment processing with Stripe, order management system, and responsive mobile design."
+        },
+        "ru": {
+          "title": "DentalMarket - Магазин профессионального оборудования",
+          "subtitle": "Платформа электронной коммерции для стоматологов",
+          "description": "Полнофункциональная онлайн-платформа для продажи стоматологического оборудования. Включает расширенный каталог товаров, корзину покупок, безопасную оплату через Stripe, систему управления заказами и адаптивный дизайн."
+        }
+      },
+      "images": []
+    },
+    {
+      "id": 2,
+      "project_key": "corporate-website",
+      "category": "corporate",
+      "cover_image": "/images/portfolio/corporate-website-cover.jpg",
+      "project_url": "https://example.com/corporate",
+      "technologies": ["Vue.js", "Nuxt", "Node.js", "MongoDB"],
+      "visible": true,
+      "sort_order": 2,
+      "translations": {
+        "en": {
+          "title": "Corporate Website - Law Firm",
+          "subtitle": "Professional services company website",
+          "description": "Multi-page corporate website for a law firm. Includes service offerings, team profiles with bios, contact forms with validation, appointment booking system, and blog section for legal articles."
+        },
+        "ru": {
+          "title": "Корпоративный сайт - Юридическая фирма",
+          "subtitle": "Сайт компании профессиональных услуг",
+          "description": "Многостраничный корпоративный сайт для юридической фирмы. Включает описание услуг, профили команды, формы обратной связи, систему записи на консультацию и блог с юридическими статьями."
+        }
+      },
+      "images": []
+    },
+    {
+      "id": 3,
+      "project_key": "saas-landing",
+      "category": "landing",
+      "cover_image": "/images/portfolio/saas-landing-cover.jpg",
+      "project_url": "https://example.com/saas",
+      "technologies": ["React", "Next.js", "Tailwind CSS", "Stripe", "Firebase"],
+      "visible": true,
+      "sort_order": 3,
+      "translations": {
+        "en": {
+          "title": "SaaS Product Landing Page",
+          "subtitle": "High-converting landing page for SaaS product",
+          "description": "Landing page for a SaaS management tool. Features include hero section with video, features showcase, pricing plans, customer testimonials, FAQ section, and integrated email signup with Stripe payment integration."
+        },
+        "ru": {
+          "title": "Посадочная страница SaaS продукта",
+          "subtitle": "Высоконконвертирующаяся посадочная страница",
+          "description": "Посадочная страница для SaaS инструмента. Включает героическую секцию с видео, галерею функций, тарифные планы, отзывы клиентов, раздел FAQ и интеграцию с email подпиской и платежами Stripe."
+        }
+      },
+      "images": []
+    }
+  ]
+}
