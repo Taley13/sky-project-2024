@@ -19,6 +19,16 @@ const DB_PATH = path.join(__dirname, 'database.sqlite');
 
 let db;
 
+// Load modules DB for TZ generation
+const MODULES_PATH = path.join(__dirname, '..', '..', 'frontend', 'data', 'modules.json');
+let modulesDB = null;
+try {
+    modulesDB = JSON.parse(fs.readFileSync(MODULES_PATH, 'utf-8'));
+    console.log('✓ Modules DB loaded for TZ generation');
+} catch (e) {
+    console.error('Failed to load modules.json:', e.message);
+}
+
 // ===== SECURITY =====
 app.use(helmet({
     contentSecurityPolicy: {
@@ -146,6 +156,210 @@ function sendTelegram(message) {
     req.end();
 }
 
+// Send multiple Telegram messages sequentially
+function sendTelegramSequence(messages) {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+    if (!token || !chatId || !messages.length) return;
+
+    let i = 0;
+    function sendNext() {
+        if (i >= messages.length) return;
+        const payload = JSON.stringify({
+            chat_id: chatId,
+            text: messages[i],
+            parse_mode: 'HTML'
+        });
+        const options = {
+            hostname: 'api.telegram.org',
+            path: `/bot${token}/sendMessage`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(payload)
+            }
+        };
+        const req = https.request(options, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                try {
+                    const result = JSON.parse(data);
+                    if (result.ok) {
+                        console.log(`✓ TZ message ${i + 1}/${messages.length} sent`);
+                    } else {
+                        console.error('Telegram API error:', result.description);
+                    }
+                } catch (e) {
+                    console.error('Telegram parse error:', e.message);
+                }
+                i++;
+                if (i < messages.length) setTimeout(sendNext, 300);
+            });
+        });
+        req.on('error', (err) => {
+            console.error('Telegram request error:', err.message);
+        });
+        req.write(payload);
+        req.end();
+    }
+    sendNext();
+}
+
+// Build TZ messages from configurator data
+function buildTZMessages(data, orderId) {
+    const curr = data.currency || 'EUR';
+    const currSymbol = { EUR: '€', USD: '$', RUB: '₽' }[curr] || '€';
+    const tzNum = `TZ-${String(orderId).padStart(4, '0')}`;
+    const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Warsaw' });
+
+    // Look up site type from DB
+    const siteTypeId = data.siteType?.id || '';
+    const siteTypeDB = modulesDB?.siteTypes?.find(s => s.id === siteTypeId);
+    const siteTypeName = siteTypeDB?.name_ru || data.siteType?.name_ru || 'Не указан';
+    const siteTypeDesc = siteTypeDB?.description_ru || '';
+    const siteTypeFeatures = siteTypeDB?.features_ru || [];
+    const timeline = siteTypeDB?.timeline_ru || '';
+    const basePrice = siteTypeDB?.basePrice || data.siteType?.basePrice || 0;
+
+    // Look up package
+    const pkgId = data.package?.id;
+    let pkgName = '';
+    let pkgDesc = '';
+    if (pkgId && siteTypeId && modulesDB?.packages?.[siteTypeId]) {
+        const pkgDB = modulesDB.packages[siteTypeId].find(p => p.id === pkgId);
+        if (pkgDB) {
+            pkgName = pkgDB.name_ru || '';
+            pkgDesc = pkgDB.description_ru || '';
+        }
+    }
+
+    // === MESSAGE 1: Client + Site Type ===
+    const msg1Lines = [
+        `<b>📋 ТЕХНИЧЕСКОЕ ЗАДАНИЕ #${tzNum}</b>`,
+        ``,
+        `<b>👤 КЛИЕНТ</b>`,
+        `Имя: ${escapeHtml(data.clientName)}`,
+        `Телефон: ${escapeHtml(data.clientPhone)}`,
+        data.clientEmail ? `Email: ${escapeHtml(data.clientEmail)}` : null,
+        ``,
+        `<b>🌐 ТИП САЙТА: ${escapeHtml(siteTypeName)}</b>`,
+        siteTypeDesc ? `<i>${escapeHtml(siteTypeDesc)}</i>` : null,
+    ];
+
+    if (siteTypeFeatures.length > 0) {
+        msg1Lines.push(``, `<b>Базовый функционал:</b>`);
+        siteTypeFeatures.forEach(f => {
+            msg1Lines.push(` • ${escapeHtml(f)}`);
+        });
+    }
+
+    if (timeline) msg1Lines.push(``, `<b>⏱ Срок:</b> ${escapeHtml(timeline)}`);
+    if (pkgName) {
+        let pkgLine = `<b>📋 Пакет:</b> ${escapeHtml(pkgName)}`;
+        if (data.discount) pkgLine += ` (скидка ${data.discount}%)`;
+        msg1Lines.push(pkgLine);
+    }
+
+    const msg1 = msg1Lines.filter(l => l !== null).join('\n');
+
+    // === MESSAGE 2: Modules detail ===
+    const selectedModules = data.modules || [];
+    let msg2 = '';
+
+    if (selectedModules.length > 0) {
+        const msg2Lines = [
+            `<b>📋 ТЗ #${tzNum} — МОДУЛИ</b>`,
+            ``,
+            `<b>📦 МОДУЛИ (${selectedModules.length} шт.)</b>`,
+        ];
+
+        selectedModules.forEach((mod, idx) => {
+            const moduleDB = modulesDB?.modules?.find(m => m.id === mod.id);
+            const icon = moduleDB?.icon || mod.icon || '📦';
+            const name = moduleDB?.name_ru || mod.name_ru || mod.name_en || mod.id;
+            const price = mod.price || 0;
+
+            msg2Lines.push(``);
+
+            // Special handling for telegram_bot with tiers
+            if (mod.id === 'telegram_bot' && data.botConfig && moduleDB?.tiers) {
+                const tier = moduleDB.tiers.find(t => t.id === data.botConfig.tierId);
+                const tierName = tier?.name_ru || data.botConfig.tierId;
+                const tierPrice = tier?.price || 0;
+
+                msg2Lines.push(`<b>${icon} ${idx + 1}. ${escapeHtml(name)} — ${currSymbol}${price}</b>`);
+                msg2Lines.push(`Уровень: <b>${escapeHtml(tierName)}</b> (${currSymbol}${tierPrice})`);
+
+                if (tier?.features_ru) {
+                    tier.features_ru.forEach(f => {
+                        msg2Lines.push(` ✓ ${escapeHtml(f)}`);
+                    });
+                }
+
+                // Addons
+                const selectedAddons = data.botConfig.addons || [];
+                if (selectedAddons.length > 0 && moduleDB.addons) {
+                    msg2Lines.push(`<i>Допы:</i>`);
+                    selectedAddons.forEach(addonId => {
+                        const addon = moduleDB.addons.find(a => a.id === addonId);
+                        if (addon) {
+                            msg2Lines.push(` + ${escapeHtml(addon.name_ru)} (+${currSymbol}${addon.price})`);
+                        }
+                    });
+                }
+            } else {
+                msg2Lines.push(`<b>${icon} ${idx + 1}. ${escapeHtml(name)} — ${currSymbol}${price}</b>`);
+                if (moduleDB?.features_ru) {
+                    moduleDB.features_ru.forEach(f => {
+                        msg2Lines.push(` ✓ ${escapeHtml(f)}`);
+                    });
+                }
+            }
+        });
+
+        msg2 = msg2Lines.join('\n');
+    }
+
+    // === MESSAGE 3: Financial summary ===
+    const msg3Lines = [
+        `<b>📋 ТЗ #${tzNum} — ИТОГО</b>`,
+        ``,
+        `<b>💰 ФИНАНСОВАЯ СВОДКА</b>`,
+        ``,
+        `База (${escapeHtml(siteTypeName)}): ${currSymbol}${basePrice.toLocaleString()}`,
+    ];
+
+    selectedModules.forEach(mod => {
+        const moduleDB = modulesDB?.modules?.find(m => m.id === mod.id);
+        const name = moduleDB?.name_ru || mod.name_ru || mod.name_en || mod.id;
+        msg3Lines.push(`${escapeHtml(name)}: ${currSymbol}${(mod.price || 0).toLocaleString()}`);
+    });
+
+    const subtotal = basePrice + selectedModules.reduce((sum, m) => sum + (m.price || 0), 0);
+    msg3Lines.push(``);
+    msg3Lines.push(`Подитог: ${currSymbol}${subtotal.toLocaleString()}`);
+
+    if (data.discount) {
+        const discountAmount = Math.round(subtotal * data.discount / 100);
+        msg3Lines.push(`Скидка (${data.discount}%): −${currSymbol}${discountAmount.toLocaleString()}`);
+    }
+
+    msg3Lines.push(`<b>ИТОГО: ${currSymbol}${(data.total || 0).toLocaleString()}</b>`);
+    msg3Lines.push(``);
+    msg3Lines.push(`💱 Валюта: ${curr}`);
+    msg3Lines.push(`⏰ ${timestamp}`);
+
+    const msg3 = msg3Lines.join('\n');
+
+    // Compile messages (skip empty msg2 if no modules)
+    const messages = [msg1];
+    if (msg2) messages.push(msg2);
+    messages.push(msg3);
+
+    return messages;
+}
+
 // ===== API ROUTES =====
 
 // Health check
@@ -195,7 +409,7 @@ app.post('/api/orders', leadsLimiter, (req, res) => {
     }
 });
 
-// Configurator lead
+// Configurator lead — sends full TZ to Telegram
 app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
     const {
         siteType, modules, package: pkg, discount, total, botConfig,
@@ -207,44 +421,41 @@ app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
     }
 
     try {
-        // Build modules list for message
         const curr = currency || 'EUR';
-        const modulesList = (modules || [])
-            .map(m => {
-                const name = m.name_ru || m.name_en || m.id || 'Module';
-                return `  • ${escapeHtml(name)} — ${m.price || 0} ${curr}`;
-            })
-            .join('\n');
+        const siteTypeName = siteType?.name_ru || siteType?.name_en || '';
 
-        const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Warsaw' });
-
-        const message = [
-            `<b>🔧 ЗАЯВКА С КОНФИГУРАТОРА</b>`,
-            ``,
-            `<b>👤 Клиент:</b> ${escapeHtml(clientName)}`,
-            `<b>📞 Телефон:</b> ${escapeHtml(clientPhone)}`,
-            clientEmail ? `<b>📧 Email:</b> ${escapeHtml(clientEmail)}` : null,
-            ``,
-            `<b>🌐 Тип сайта:</b> ${escapeHtml(siteType || 'Не указан')}`,
-            modulesList ? `\n<b>📦 Модули:</b>\n${modulesList}` : null,
-            pkg ? `\n<b>📋 Пакет:</b> ${escapeHtml(pkg)}` : null,
-            discount ? `<b>🏷 Скидка:</b> ${discount}%` : null,
-            total != null ? `<b>💰 Итого:</b> ${total} ${curr}` : null,
-            botConfig ? `\n<b>🤖 Telegram-бот:</b> ${escapeHtml(JSON.stringify(botConfig))}` : null,
-            ``,
-            `<b>⏰</b> ${timestamp}`,
-        ].filter(Boolean).join('\n');
-
-        sendTelegram(message);
-
-        // Save to database
-        const comment = `Configurator: ${siteType || ''} | Modules: ${(modules || []).length} | Total: ${total || 0} ${curr}`;
+        // Save to database first to get order ID for TZ number
+        const comment = `Configurator: ${siteTypeName} | Modules: ${(modules || []).length} | Total: ${total || 0} ${curr}`;
         db.run(
             `INSERT INTO orders (name, phone, email, comment, page, product_key, status)
              VALUES (?, ?, ?, ?, ?, ?, 'new')`,
-            [clientName, clientPhone, clientEmail || '', comment, 'configurator', 'configurator', ]
+            [clientName, clientPhone, clientEmail || '', comment, 'configurator', 'configurator']
         );
         saveDatabase();
+
+        // Get the order ID for TZ number
+        const result = db.exec('SELECT last_insert_rowid() as id');
+        const orderId = result[0]?.values[0]?.[0] || 0;
+
+        // Build and send TZ
+        if (modulesDB) {
+            const messages = buildTZMessages(req.body, orderId);
+            sendTelegramSequence(messages);
+        } else {
+            // Fallback if modules.json failed to load
+            const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Warsaw' });
+            const fallback = [
+                `<b>📋 ЗАЯВКА С КОНФИГУРАТОРА #TZ-${String(orderId).padStart(4, '0')}</b>`,
+                ``,
+                `<b>👤 Клиент:</b> ${escapeHtml(clientName)}`,
+                `<b>📞 Телефон:</b> ${escapeHtml(clientPhone)}`,
+                clientEmail ? `<b>📧 Email:</b> ${escapeHtml(clientEmail)}` : null,
+                `<b>🌐 Тип:</b> ${escapeHtml(siteTypeName)}`,
+                `<b>💰 Итого:</b> ${total || 0} ${curr}`,
+                `<b>⏰</b> ${timestamp}`,
+            ].filter(Boolean).join('\n');
+            sendTelegram(fallback);
+        }
 
         res.json({ success: true, message: 'Configuration submitted successfully!' });
     } catch (error) {
