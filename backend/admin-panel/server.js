@@ -377,6 +377,17 @@ app.post('/api/orders', leadsLimiter, (req, res) => {
         return res.status(400).json({ error: 'Name and phone are required' });
     }
 
+    // Input length validation
+    if (name.length > 100 || phone.length > 50) {
+        return res.status(400).json({ error: 'Input too long' });
+    }
+    if (comment && comment.length > 2000) {
+        return res.status(400).json({ error: 'Message too long (max 2000 characters)' });
+    }
+    if (email && email.length > 100) {
+        return res.status(400).json({ error: 'Email too long' });
+    }
+
     try {
         // Save to database
         db.run(
@@ -420,6 +431,13 @@ app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
 
     if (!clientName || !clientPhone) {
         return res.status(400).json({ error: 'Name and phone are required' });
+    }
+
+    if (clientName.length > 100 || clientPhone.length > 50) {
+        return res.status(400).json({ error: 'Input too long' });
+    }
+    if (clientEmail && clientEmail.length > 100) {
+        return res.status(400).json({ error: 'Email too long' });
     }
 
     try {

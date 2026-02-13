@@ -35,9 +35,9 @@
                 <button class="lang-btn active" data-lang="en">EN</button>
                 <button class="lang-btn" data-lang="ru">RU</button>
             </div>
-            <div class="hamburger" id="hamburger">
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
                 <span></span><span></span><span></span>
-            </div>
+            </button>
         </div>
     </nav>
 
@@ -51,48 +51,48 @@
     <section class="configurator-section" id="configuratorSection">
         <div class="container">
             <div class="configurator-wizard" id="configuratorWizard">
-                <!-- Заголовок -->
+                <!-- Header -->
                 <div class="wizard-header">
                     <h2 class="wizard-title" data-i18n="configurator.title">
-                        Соберите свой идеальный сайт
+                        Build Your Perfect Website
                     </h2>
                     <p class="wizard-subtitle" data-i18n="configurator.subtitle">
-                        Выберите нужные модули за 3 простых шага
+                        Choose the right modules in 3 simple steps
                     </p>
                 </div>
 
-                <!-- Индикатор шагов -->
+                <!-- Step Indicator -->
                 <div class="wizard-steps" id="wizardSteps">
                     <div class="wizard-step active" data-step="1">
                         <div class="step-number">1</div>
-                        <div class="step-label" data-i18n="configurator.step1">Тип сайта</div>
+                        <div class="step-label" data-i18n="configurator.step1">Site Type</div>
                     </div>
                     <div class="wizard-step" data-step="2">
                         <div class="step-number">2</div>
-                        <div class="step-label" data-i18n="configurator.step2">Модули</div>
+                        <div class="step-label" data-i18n="configurator.step2">Modules</div>
                     </div>
                     <div class="wizard-step" data-step="3">
                         <div class="step-number">3</div>
-                        <div class="step-label" data-i18n="configurator.step4">Итог</div>
+                        <div class="step-label" data-i18n="configurator.step4">Summary</div>
                     </div>
                     <div class="wizard-step" data-step="4">
                         <div class="step-number">4</div>
-                        <div class="step-label" data-i18n="configurator.step3">Контакты</div>
+                        <div class="step-label" data-i18n="configurator.step3">Contact</div>
                     </div>
                 </div>
 
-                <!-- Динамический контент шагов -->
+                <!-- Dynamic step content -->
                 <div class="wizard-content" id="wizardContent">
-                    <!-- Рендерится через JS -->
+                    <!-- Rendered via JS -->
                 </div>
 
-                <!-- Навигация -->
+                <!-- Navigation -->
                 <div class="wizard-navigation" id="wizardNavigation">
                     <button class="btn btn-secondary" id="prevBtn" style="display:none;">
-                        <span data-i18n="configurator.prev">Назад</span>
+                        <span data-i18n="configurator.prev">Back</span>
                     </button>
                     <button class="btn btn-primary" id="nextBtn">
-                        <span data-i18n="configurator.next">Далее</span>
+                        <span data-i18n="configurator.next">Next</span>
                     </button>
                 </div>
             </div>
