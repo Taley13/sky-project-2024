@@ -99,6 +99,165 @@ function saveDatabase() {
     fs.writeFileSync(DB_PATH, buffer);
 }
 
+// ===== TELEGRAM BOT =====
+
+// Load portfolio for /projects command
+const PORTFOLIO_PATH = path.join(__dirname, '..', '..', 'frontend', 'data', 'portfolio-projects.json');
+let portfolioDB = null;
+try {
+    portfolioDB = JSON.parse(fs.readFileSync(PORTFOLIO_PATH, 'utf-8'));
+} catch (e) {
+    console.error('Failed to load portfolio-projects.json:', e.message);
+}
+
+const SITE_URL = 'https://sky-project-2024.onrender.com';
+
+// Register bot commands with Telegram on startup
+function setBotCommands() {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    if (!token) return;
+
+    const payload = JSON.stringify({
+        commands: [
+            { command: 'start', description: 'Welcome message' },
+            { command: 'help', description: 'How to use this bot' },
+            { command: 'projects', description: 'Our portfolio' }
+        ]
+    });
+
+    const options = {
+        hostname: 'api.telegram.org',
+        path: `/bot${token}/setMyCommands`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
+    };
+
+    const req = https.request(options, (res) => {
+        let d = '';
+        res.on('data', chunk => d += chunk);
+        res.on('end', () => {
+            try {
+                const result = JSON.parse(d);
+                if (result.ok) console.log('✓ Bot commands registered');
+                else console.error('setMyCommands error:', result.description);
+            } catch (e) { /* ignore */ }
+        });
+    });
+    req.on('error', () => {});
+    req.write(payload);
+    req.end();
+}
+
+// Send message with optional inline keyboard
+function sendTelegramWithButtons(chatId, text, buttons) {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    if (!token) return;
+
+    const body = {
+        chat_id: chatId,
+        text: text,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true
+    };
+    if (buttons) body.reply_markup = { inline_keyboard: buttons };
+
+    const payload = JSON.stringify(body);
+    const options = {
+        hostname: 'api.telegram.org',
+        path: `/bot${token}/sendMessage`,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
+    };
+
+    const req = https.request(options, (res) => {
+        let d = '';
+        res.on('data', chunk => d += chunk);
+        res.on('end', () => {});
+    });
+    req.on('error', () => {});
+    req.write(payload);
+    req.end();
+}
+
+// Handle incoming bot commands
+function handleBotUpdate(update) {
+    const message = update.message;
+    if (!message || !message.text) return;
+
+    const chatId = message.chat.id;
+    const text = message.text.trim().split('@')[0]; // strip @BotName
+
+    if (text === '/start') {
+        const welcome = [
+            `<b>Sky Web Studio</b>`,
+            ``,
+            `I accept website creation requests.`,
+            `Fill out the form on our website, and I'll send a complete technical specification here.`,
+            ``,
+            `<b>Commands:</b>`,
+            `/start — this message`,
+            `/help — how to use`,
+            `/projects — our portfolio`,
+            ``,
+            `Want to discuss a project? Write @taleyaliev306`
+        ].join('\n');
+
+        sendTelegramWithButtons(chatId, welcome, [
+            [{ text: 'Build a Website', url: `${SITE_URL}/services.html` }],
+            [{ text: 'Our Portfolio', url: `${SITE_URL}/portfolio.html` }],
+            [{ text: 'Contact Us', url: `${SITE_URL}/contacts.html` }]
+        ]);
+    } else if (text === '/help') {
+        const help = [
+            `<b>How it works:</b>`,
+            ``,
+            `1. Go to our configurator`,
+            `2. Choose your site type and modules`,
+            `3. Enter your contact details and submit`,
+            `4. A full TZ (technical specification) arrives in this chat`,
+            ``,
+            `<b>What the TZ includes:</b>`,
+            ` - Site type with all features`,
+            ` - Selected modules with descriptions`,
+            ` - Financial summary with discounts`,
+            ``,
+            `Questions? Write @taleyaliev306`
+        ].join('\n');
+
+        sendTelegramWithButtons(chatId, help, [
+            [{ text: 'Open Configurator', url: `${SITE_URL}/services.html` }]
+        ]);
+    } else if (text === '/projects') {
+        const projects = portfolioDB?.projects || [];
+        if (projects.length === 0) {
+            sendTelegramWithButtons(chatId, 'Portfolio is being updated. Visit our website for the latest projects.', [
+                [{ text: 'View Portfolio', url: `${SITE_URL}/portfolio.html` }]
+            ]);
+            return;
+        }
+
+        const lines = [`<b>Our Projects:</b>`, ``];
+        const buttons = [];
+
+        projects.forEach((p, i) => {
+            const t = p.translations?.ru || p.translations?.en || {};
+            const price = p.price ? ` — ${p.currency || '€'}${p.price.toLocaleString()}` : '';
+            lines.push(`<b>${i + 1}. ${t.title || p.project_key}</b>${price}`);
+            lines.push(`<i>${t.subtitle || ''}</i>`);
+            lines.push(``);
+
+            if (p.project_url) {
+                buttons.push([{ text: t.title || p.project_key, url: p.project_url }]);
+            }
+        });
+
+        lines.push(`Full portfolio on the website:`);
+        buttons.push([{ text: 'All Projects', url: `${SITE_URL}/portfolio.html` }]);
+
+        sendTelegramWithButtons(chatId, lines.join('\n'), buttons);
+    }
+}
+
 // ===== TELEGRAM HELPERS =====
 
 function escapeHtml(text) {
@@ -156,8 +315,8 @@ function sendTelegram(message) {
     req.end();
 }
 
-// Send multiple Telegram messages sequentially
-function sendTelegramSequence(messages) {
+// Send multiple Telegram messages sequentially (last message gets inline buttons)
+function sendTelegramSequence(messages, lastMessageButtons) {
     const token = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
     if (!token || !chatId || !messages.length) return;
@@ -165,11 +324,16 @@ function sendTelegramSequence(messages) {
     let i = 0;
     function sendNext() {
         if (i >= messages.length) return;
-        const payload = JSON.stringify({
+        const isLast = (i === messages.length - 1);
+        const body = {
             chat_id: chatId,
             text: messages[i],
             parse_mode: 'HTML'
-        });
+        };
+        if (isLast && lastMessageButtons) {
+            body.reply_markup = { inline_keyboard: lastMessageButtons };
+        }
+        const payload = JSON.stringify(body);
         const options = {
             hostname: 'api.telegram.org',
             path: `/bot${token}/sendMessage`,
@@ -457,10 +621,17 @@ app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
         const result = db.exec('SELECT last_insert_rowid() as id');
         const orderId = result[0]?.values[0]?.[0] || 0;
 
-        // Build and send TZ
+        // Build and send TZ with inline buttons on last message
         if (modulesDB) {
             const messages = buildTZMessages(req.body, orderId);
-            sendTelegramSequence(messages);
+            const tzButtons = [
+                [{ text: '💬 Ответить клиенту', url: `https://t.me/+${(clientPhone || '').replace(/[^\d]/g, '')}` }],
+                [
+                    { text: '🌐 Сайт', url: `${SITE_URL}` },
+                    { text: '⚙️ Конфигуратор', url: `${SITE_URL}/services.html` }
+                ]
+            ];
+            sendTelegramSequence(messages, tzButtons);
         } else {
             // Fallback if modules.json failed to load
             const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Warsaw' });
@@ -482,6 +653,16 @@ app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
         console.error('Error submitting configuration:', error);
         res.status(500).json({ error: 'Failed to submit configuration' });
     }
+});
+
+// Telegram bot webhook — handles /start, /help, /projects
+app.post('/api/telegram/webhook', (req, res) => {
+    try {
+        handleBotUpdate(req.body);
+    } catch (e) {
+        console.error('Webhook error:', e.message);
+    }
+    res.sendStatus(200);
 });
 
 // ===== STATIC FILES =====
@@ -522,6 +703,39 @@ async function start() {
             console.log(`\n🚀 Sky Backend running on http://localhost:${PORT}`);
             console.log(`📁 Frontend served from: ${frontendPath}`);
             console.log(`📊 Database: ${DB_PATH}\n`);
+
+            // Register bot commands on startup
+            setBotCommands();
+
+            // Set webhook if in production (RENDER_EXTERNAL_URL available)
+            const externalUrl = process.env.RENDER_EXTERNAL_URL;
+            if (externalUrl) {
+                const webhookUrl = `${externalUrl}/api/telegram/webhook`;
+                const token = process.env.TELEGRAM_BOT_TOKEN;
+                if (token) {
+                    const payload = JSON.stringify({ url: webhookUrl });
+                    const options = {
+                        hostname: 'api.telegram.org',
+                        path: `/bot${token}/setWebhook`,
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
+                    };
+                    const req = https.request(options, (res) => {
+                        let d = '';
+                        res.on('data', chunk => d += chunk);
+                        res.on('end', () => {
+                            try {
+                                const result = JSON.parse(d);
+                                if (result.ok) console.log(`✓ Webhook set: ${webhookUrl}`);
+                                else console.error('setWebhook error:', result.description);
+                            } catch (e) { /* ignore */ }
+                        });
+                    });
+                    req.on('error', () => {});
+                    req.write(payload);
+                    req.end();
+                }
+            }
         });
     } catch (error) {
         console.error('Failed to start server:', error);
