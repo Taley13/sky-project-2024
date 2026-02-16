@@ -119,9 +119,9 @@ function setBotCommands() {
 
     const payload = JSON.stringify({
         commands: [
-            { command: 'start', description: 'Welcome message' },
-            { command: 'help', description: 'How to use this bot' },
-            { command: 'projects', description: 'Our portfolio' }
+            { command: 'start', description: 'Приветствие' },
+            { command: 'help', description: 'Как пользоваться' },
+            { command: 'projects', description: 'Наше портфолио' }
         ]
     });
 
@@ -191,52 +191,48 @@ function handleBotUpdate(update) {
         const welcome = [
             `<b>Sky Web Studio</b>`,
             ``,
-            `I accept website creation requests.`,
-            `Fill out the form on our website, and I'll send a complete technical specification here.`,
+            `Принимаю заявки на создание сайтов.`,
+            `Заполните форму на нашем сайте — сюда придёт готовое техническое задание.`,
             ``,
-            `<b>Commands:</b>`,
-            `/start — this message`,
-            `/help — how to use`,
-            `/projects — our portfolio`,
-            ``,
-            `Want to discuss a project? Write @taleyaliev306`
+            `<b>Команды:</b>`,
+            `/start — это сообщение`,
+            `/help — как пользоваться`,
+            `/projects — наше портфолио`,
         ].join('\n');
 
         sendTelegramWithButtons(chatId, welcome, [
-            [{ text: 'Build a Website', url: `${SITE_URL}/services.html` }],
-            [{ text: 'Our Portfolio', url: `${SITE_URL}/portfolio.html` }],
-            [{ text: 'Contact Us', url: `${SITE_URL}/contacts.html` }]
+            [{ text: '🛠 Собрать сайт', url: `${SITE_URL}/services.html` }],
+            [{ text: '📁 Портфолио', url: `${SITE_URL}/portfolio.html` }],
+            [{ text: '✉️ Связаться', url: `${SITE_URL}/contacts.html` }]
         ]);
     } else if (text === '/help') {
         const help = [
-            `<b>How it works:</b>`,
+            `<b>Как это работает:</b>`,
             ``,
-            `1. Go to our configurator`,
-            `2. Choose your site type and modules`,
-            `3. Enter your contact details and submit`,
-            `4. A full TZ (technical specification) arrives in this chat`,
+            `1. Откройте конфигуратор на сайте`,
+            `2. Выберите тип сайта и модули`,
+            `3. Укажите контактные данные и отправьте`,
+            `4. Сюда придёт полное ТЗ (техническое задание)`,
             ``,
-            `<b>What the TZ includes:</b>`,
-            ` - Site type with all features`,
-            ` - Selected modules with descriptions`,
-            ` - Financial summary with discounts`,
-            ``,
-            `Questions? Write @taleyaliev306`
+            `<b>Что входит в ТЗ:</b>`,
+            ` • Тип сайта с полным функционалом`,
+            ` • Выбранные модули с описанием`,
+            ` • Финансовая сводка со скидками`,
         ].join('\n');
 
         sendTelegramWithButtons(chatId, help, [
-            [{ text: 'Open Configurator', url: `${SITE_URL}/services.html` }]
+            [{ text: '⚙️ Открыть конфигуратор', url: `${SITE_URL}/services.html` }]
         ]);
     } else if (text === '/projects') {
         const projects = portfolioDB?.projects || [];
         if (projects.length === 0) {
-            sendTelegramWithButtons(chatId, 'Portfolio is being updated. Visit our website for the latest projects.', [
-                [{ text: 'View Portfolio', url: `${SITE_URL}/portfolio.html` }]
+            sendTelegramWithButtons(chatId, 'Портфолио обновляется. Актуальные проекты — на сайте.', [
+                [{ text: '📁 Портфолио', url: `${SITE_URL}/portfolio.html` }]
             ]);
             return;
         }
 
-        const lines = [`<b>Our Projects:</b>`, ``];
+        const lines = [`<b>Наши проекты:</b>`, ``];
         const buttons = [];
 
         projects.forEach((p, i) => {
@@ -251,8 +247,8 @@ function handleBotUpdate(update) {
             }
         });
 
-        lines.push(`Full portfolio on the website:`);
-        buttons.push([{ text: 'All Projects', url: `${SITE_URL}/portfolio.html` }]);
+        lines.push(`Все проекты на сайте:`);
+        buttons.push([{ text: '📁 Все проекты', url: `${SITE_URL}/portfolio.html` }]);
 
         sendTelegramWithButtons(chatId, lines.join('\n'), buttons);
     }
