@@ -8,16 +8,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 4000
-      - key: SESSION_SECRET
-        generateValue: true
-      - key: ADMIN_DEFAULT_PASSWORD
-        sync: false
-      - key: WEBSITE_API_KEY
-        generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://sky.example.com,https://your-render-instance.onrender.com
+        value: https://sky-project-2024.onrender.com
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: TELEGRAM_CHAT_ID
