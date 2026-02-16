@@ -97,5 +97,16 @@
 }
 
 @media (max-width: 768px) {
-    .contact-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; gap: 32px; }
+    .contact-section { padding: 40px 0 60px; }
+}
+
+@media (max-width: 480px) {
+    .contact-grid { gap: 24px; }
+    .contact-section { padding: 24px 0 40px; }
+    .info-card { padding: 20px 16px; }
+    .info-card h3 { font-size: 0.75rem; margin-bottom: 8px; }
+    .info-card p { font-size: 1rem; }
+    .form-group input,
+    .form-group textarea { padding: 12px 14px; font-size: 0.9rem; }
 }

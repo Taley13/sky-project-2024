@@ -452,3 +452,17 @@
         gap: 16px;
     }
 }
+
+@media (max-width: 480px) {
+    .portfolio-section { padding: 32px 0; }
+    .portfolio-filters { gap: 8px; }
+    .portfolio-filter-btn { font-size: 0.82rem; padding: 10px 16px; }
+    .portfolio-card-body { padding: 20px 16px; }
+    .portfolio-card-title { font-size: 1.1rem; }
+    .portfolio-card-desc { font-size: 0.82rem; }
+    .portfolio-card-image { height: 180px; }
+    .portfolio-modal-content { padding: 20px 16px; }
+    .portfolio-modal-body h2 { font-size: 1.3rem; }
+    .portfolio-modal-body p { font-size: 0.85rem; }
+    .portfolio-modal-close { top: 12px; right: 12px; }
+}

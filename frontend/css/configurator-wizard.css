@@ -1532,8 +1532,12 @@
 }
 
 @media (max-width: 480px) {
-    .configurator-section { padding: 100px 0 40px; }
-    .wizard-title { font-size: 1.5rem; }
+    .configurator-section { padding: 90px 0 32px; }
+    .configurator-wizard { padding: 28px 16px; }
+    .wizard-steps { gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
+    .step-label { font-size: 0.6rem; }
+    .step-number { width: 28px; height: 28px; font-size: 0.8rem; }
+    .wizard-title { font-size: 1.3rem; }
     .wizard-subtitle { font-size: 1rem; }
     .currency-btn { font-size: 0.72rem; padding: 3px 8px; }
     .wizard-content { min-height: 300px; }
@@ -1680,4 +1684,11 @@
         font-size: 0.9rem;
         padding-left: 24px;
     }
+}
+
+@media (max-width: 480px) {
+    .base-modal-content { padding: 24px 16px; width: 95%; }
+    .base-modal-content h3 { font-size: 1.05rem; }
+    .base-modal-list li { font-size: 0.82rem; padding: 10px 0 10px 20px; }
+    .form-group input { padding: 12px 14px; font-size: 0.9rem; }
 }

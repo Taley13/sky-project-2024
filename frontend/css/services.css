@@ -294,3 +294,13 @@
         padding: 0 0 30px;
     }
 }
+
+@media (max-width: 480px) {
+    .product-card-image { height: 200px; }
+    .product-card-body { padding: 20px 16px; }
+    .product-card-title { font-size: 1.15rem; }
+    .product-card-subtitle { font-size: 0.85rem; margin-bottom: 16px; }
+    .product-card-price { font-size: 1.1rem; margin-bottom: 16px; }
+    .product-card-btn { padding: 12px 20px; font-size: 0.85rem; }
+    .no-results { padding: 60px 16px; font-size: 1rem; }
+}

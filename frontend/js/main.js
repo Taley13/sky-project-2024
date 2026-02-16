@@ -66,10 +66,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const newHamburger = hamburger.cloneNode(true);
             hamburger.parentNode.replaceChild(newHamburger, hamburger);
 
-            newHamburger.addEventListener('click', () => {
+            newHamburger.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const isOpen = navMenu.classList.toggle('active');
                 newHamburger.classList.toggle('active');
                 newHamburger.setAttribute('aria-expanded', isOpen);
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            });
+
+            // Close menu on outside click
+            document.addEventListener('click', (e) => {
+                if (navMenu.classList.contains('active') && !navMenu.contains(e.target)) {
+                    navMenu.classList.remove('active');
+                    newHamburger.classList.remove('active');
+                    newHamburger.setAttribute('aria-expanded', 'false');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Close menu on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                    newHamburger.classList.remove('active');
+                    newHamburger.setAttribute('aria-expanded', 'false');
+                    document.body.style.overflow = '';
+                }
             });
         }
     }
