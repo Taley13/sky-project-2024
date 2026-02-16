@@ -110,7 +110,7 @@ try {
     console.error('Failed to load portfolio-projects.json:', e.message);
 }
 
-const SITE_URL = 'https://sky-project-2024.onrender.com';
+const SITE_URL = process.env.RENDER_EXTERNAL_URL || 'https://sky-backend-xisk.onrender.com';
 
 // Register bot commands with Telegram on startup
 function setBotCommands() {
@@ -514,7 +514,7 @@ function buildTZMessages(data, orderId) {
     msg3Lines.push(`💱 Валюта: ${curr}`);
     msg3Lines.push(`⏰ ${timestamp}`);
     msg3Lines.push(``);
-    msg3Lines.push(`🔗 Собрано в: https://sky-project-2024.onrender.com/services.html`);
+    msg3Lines.push(`🔗 Собрано в: ${SITE_URL}/services.html`);
 
     const msg3 = msg3Lines.join('\n');
 
