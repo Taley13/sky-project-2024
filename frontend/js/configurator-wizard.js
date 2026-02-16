@@ -949,17 +949,20 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.form-group input').forEach(i => i.classList.remove('input-error'));
         });
 
-        // Маска телефона: +XX XXX XXX XXX
+        // Маска телефона: +7 XXX XXX-XX-XX
         const phoneInput = document.getElementById('clientPhone');
         if (phoneInput) {
             phoneInput.addEventListener('input', () => {
-                let val = phoneInput.value.replace(/[^\d+]/g, '');
-                if (!val) return;
-                const hasPlus = val.startsWith('+');
-                const digits = val.replace(/\D/g, '');
-                let formatted = hasPlus ? '+' : '';
-                for (let i = 0; i < digits.length; i++) {
-                    if (i > 0 && i % 3 === (hasPlus ? 2 : 0) && i < 11) formatted += ' ';
+                let digits = phoneInput.value.replace(/\D/g, '');
+                if (!digits) { phoneInput.value = ''; return; }
+                // Auto-prepend 7 if user starts with 8 or just digits
+                if (digits.startsWith('8') && digits.length > 1) digits = '7' + digits.slice(1);
+                let formatted = '+';
+                for (let i = 0; i < Math.min(digits.length, 11); i++) {
+                    if (i === 1) formatted += ' ';    // +7 XXX
+                    if (i === 4) formatted += ' ';    // +7 XXX XXX
+                    if (i === 7) formatted += '-';    // +7 XXX XXX-XX
+                    if (i === 9) formatted += '-';    // +7 XXX XXX-XX-XX
                     formatted += digits[i];
                 }
                 phoneInput.value = formatted;
