@@ -1219,6 +1219,7 @@
     font-size: 1rem;
     transition: all 0.3s ease;
     background: var(--bg-color);
+    color: var(--text-color);
     letter-spacing: 0.02em;
     box-sizing: border-box;
 }
