@@ -4,27 +4,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const CONFIG = window.SITE_CONFIG || {};
     const API = CONFIG.API_BASE_URL || '/api';
-    const SITE = CONFIG.SITE_KEY || 'default';
-
-    // Load contacts from API
-    async function loadContacts() {
-        try {
-            const res = await fetch(`${API}/public/contacts/${SITE}`);
-            if (!res.ok) return;
-            const data = await res.json();
-
-            const phone = document.getElementById('contactPhone');
-            const email = document.getElementById('contactEmail');
-
-            if (phone && data.phone) phone.href = data.phone;
-            if (email && data.email) email.href = `mailto:${data.email}`;
-        } catch (e) {
-            // Contacts API unavailable
-        }
-    }
-
-    loadContacts();
-
     // Contact form
     const form = document.getElementById('contactForm');
     const success = document.getElementById('formSuccess');
