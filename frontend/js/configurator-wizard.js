@@ -1090,6 +1090,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
+            const contentType = res.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                // Server not ready (Render cold start) — retry once after 3s
+                await new Promise(r => setTimeout(r, 3000));
+                const retry = await fetch(`${API}/telegram/configurator`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        siteType: state.selectedSiteType,
+                        modules: state.selectedModules.map(m => ({
+                            id: m.id, name_en: m.name_en, name_de: m.name_de, name_ru: m.name_ru,
+                            price: getEffectiveModulePrice(m), icon: m.icon
+                        })),
+                        package: state.selectedPackage || null,
+                        discount: b.discountPct, total: b.total,
+                        botConfig: state.selectedModules.some(m => m.id === 'telegram_bot') ? state.botConfig : null,
+                        clientName: state.contactData.name, clientPhone: state.contactData.phone,
+                        clientEmail: state.contactData.email || null, site: SITE_KEY, currency: state.currency
+                    })
+                });
+                if (!retry.ok) throw new Error(l.sendError || 'Server unavailable, please try again');
+                localStorage.removeItem('configurator_state');
+                showSuccess();
+                return;
+            }
+
             if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Send failed'); }
 
             localStorage.removeItem('configurator_state');
@@ -1101,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (old) old.remove();
             const el = document.createElement('div');
             el.className = 'submit-error';
-            el.textContent = err.message;
+            el.textContent = err.message || 'Connection error';
             wizardContent.appendChild(el);
         }
     }

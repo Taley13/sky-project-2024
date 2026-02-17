@@ -87,6 +87,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
+                const contentType = res.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    // Server cold start — retry once
+                    await new Promise(r => setTimeout(r, 3000));
+                    const retry = await fetch(`${API}/orders`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: data.name.trim(), phone: data.phone.trim(),
+                            email: data.email?.trim() || '', comment: data.comment?.trim() || '', page: 'contacts'
+                        })
+                    });
+                    if (retry.ok) { form.style.display = 'none'; if (success) success.style.display = 'block'; }
+                    else alert('Server unavailable, please try again.');
+                    return;
+                }
+
                 if (res.ok) {
                     form.style.display = 'none';
                     if (success) success.style.display = 'block';
