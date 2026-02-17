@@ -7,6 +7,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const https = require('https');
+const crypto = require('crypto');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
@@ -16,8 +17,19 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 4000;
 const DB_PATH = path.join(__dirname, 'database.sqlite');
+const WEBHOOK_SECRET = crypto.randomBytes(32).toString('hex');
+const TELEGRAM_TIMEOUT = 5000; // 5 seconds
+const TELEGRAM_MAX_RETRIES = 3;
 
 let db;
+let server; // HTTP server reference for graceful shutdown
+let requestsInFlight = 0;
+
+// ===== ERROR LOGGING =====
+function logError(context, err) {
+    const msg = `[${new Date().toISOString()}] [${context}] ${err?.message || err}`;
+    console.error(msg);
+}
 
 // Load modules DB for TZ generation
 const MODULES_PATH = path.join(__dirname, '..', '..', 'frontend', 'data', 'modules.json');
@@ -26,7 +38,7 @@ try {
     modulesDB = JSON.parse(fs.readFileSync(MODULES_PATH, 'utf-8'));
     console.log('✓ Modules DB loaded for TZ generation');
 } catch (e) {
-    console.error('Failed to load modules.json:', e.message);
+    logError('STARTUP', e);
 }
 
 // ===== SECURITY =====
@@ -51,6 +63,13 @@ app.use(cors({
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
+// ===== REQUEST TRACKING (for graceful shutdown) =====
+app.use((req, res, next) => {
+    requestsInFlight++;
+    res.on('finish', () => requestsInFlight--);
+    next();
+});
+
 // ===== RATE LIMITING =====
 const leadsLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
@@ -58,13 +77,30 @@ const leadsLimiter = rateLimit({
     message: { error: 'Too many lead submissions. Please try again later.' },
 });
 
+const webhookLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 30, // 30 requests per minute
+    message: 'Too many requests',
+});
+
 // ===== DATABASE =====
 async function initDatabase() {
     const SQL = await initSqlJs();
 
     if (fs.existsSync(DB_PATH)) {
-        const buffer = fs.readFileSync(DB_PATH);
-        db = new SQL.Database(buffer);
+        try {
+            const buffer = fs.readFileSync(DB_PATH);
+            db = new SQL.Database(buffer);
+            // Integrity check
+            const check = db.exec('PRAGMA integrity_check');
+            if (check[0]?.values[0]?.[0] !== 'ok') {
+                logError('DB_INTEGRITY', 'Database integrity check failed, reinitializing');
+                db = new SQL.Database();
+            }
+        } catch (e) {
+            logError('DB_LOAD', e);
+            db = new SQL.Database();
+        }
     } else {
         db = new SQL.Database();
     }
@@ -87,19 +123,25 @@ async function initDatabase() {
     try {
         db.run('CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)');
         db.run('CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)');
-    } catch (e) {}
+    } catch (e) {
+        logError('DB_INDEX', e);
+    }
 
     saveDatabase();
     console.log('✓ Database initialized');
 }
 
 function saveDatabase() {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(DB_PATH, buffer);
+    try {
+        const data = db.export();
+        const buffer = Buffer.from(data);
+        fs.writeFileSync(DB_PATH, buffer);
+    } catch (e) {
+        logError('DB_SAVE', e);
+    }
 }
 
-// ===== TELEGRAM BOT =====
+// ===== TELEGRAM API (unified with timeout + retry) =====
 
 // Load portfolio for /projects command
 const PORTFOLIO_PATH = path.join(__dirname, '..', '..', 'frontend', 'data', 'portfolio-projects.json');
@@ -107,52 +149,92 @@ let portfolioDB = null;
 try {
     portfolioDB = JSON.parse(fs.readFileSync(PORTFOLIO_PATH, 'utf-8'));
 } catch (e) {
-    console.error('Failed to load portfolio-projects.json:', e.message);
+    logError('STARTUP', e);
 }
 
 const SITE_URL = process.env.RENDER_EXTERNAL_URL || 'https://sky-backend-xisk.onrender.com';
 
-// Register bot commands with Telegram on startup
-function setBotCommands() {
+/**
+ * Unified Telegram API request with timeout and retry
+ * @returns {Promise<object>} Telegram API response
+ */
+function telegramRequest(method, body, retries = 0) {
     const token = process.env.TELEGRAM_BOT_TOKEN;
-    if (!token) return;
+    if (!token) return Promise.resolve({ ok: false, description: 'No token' });
 
-    const payload = JSON.stringify({
+    return new Promise((resolve) => {
+        const payload = JSON.stringify(body);
+        const options = {
+            hostname: 'api.telegram.org',
+            path: `/bot${token}/${method}`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(payload)
+            },
+            timeout: TELEGRAM_TIMEOUT
+        };
+
+        const req = https.request(options, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                try {
+                    resolve(JSON.parse(data));
+                } catch (e) {
+                    logError('TG_PARSE', e);
+                    resolve({ ok: false, description: 'Parse error' });
+                }
+            });
+        });
+
+        req.on('timeout', () => {
+            req.destroy();
+            if (retries < TELEGRAM_MAX_RETRIES) {
+                const delay = (retries + 1) * 1000; // 1s, 2s, 3s
+                logError('TG_TIMEOUT', `${method} timeout, retry ${retries + 1}/${TELEGRAM_MAX_RETRIES} in ${delay}ms`);
+                setTimeout(() => {
+                    telegramRequest(method, body, retries + 1).then(resolve);
+                }, delay);
+            } else {
+                logError('TG_TIMEOUT', `${method} failed after ${TELEGRAM_MAX_RETRIES} retries`);
+                resolve({ ok: false, description: 'Timeout after retries' });
+            }
+        });
+
+        req.on('error', (err) => {
+            if (retries < TELEGRAM_MAX_RETRIES) {
+                const delay = (retries + 1) * 1000;
+                logError('TG_ERROR', `${method} error: ${err.message}, retry ${retries + 1}/${TELEGRAM_MAX_RETRIES}`);
+                setTimeout(() => {
+                    telegramRequest(method, body, retries + 1).then(resolve);
+                }, delay);
+            } else {
+                logError('TG_ERROR', `${method} failed after ${TELEGRAM_MAX_RETRIES} retries: ${err.message}`);
+                resolve({ ok: false, description: err.message });
+            }
+        });
+
+        req.write(payload);
+        req.end();
+    });
+}
+
+// Register bot commands with Telegram on startup
+async function setBotCommands() {
+    const result = await telegramRequest('setMyCommands', {
         commands: [
             { command: 'start', description: 'Приветствие' },
             { command: 'help', description: 'Как пользоваться' },
             { command: 'projects', description: 'Наше портфолио' }
         ]
     });
-
-    const options = {
-        hostname: 'api.telegram.org',
-        path: `/bot${token}/setMyCommands`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
-    };
-
-    const req = https.request(options, (res) => {
-        let d = '';
-        res.on('data', chunk => d += chunk);
-        res.on('end', () => {
-            try {
-                const result = JSON.parse(d);
-                if (result.ok) console.log('✓ Bot commands registered');
-                else console.error('setMyCommands error:', result.description);
-            } catch (e) { /* ignore */ }
-        });
-    });
-    req.on('error', () => {});
-    req.write(payload);
-    req.end();
+    if (result.ok) console.log('✓ Bot commands registered');
+    else logError('BOT_COMMANDS', result.description);
 }
 
 // Send message with optional inline keyboard
 function sendTelegramWithButtons(chatId, text, buttons) {
-    const token = process.env.TELEGRAM_BOT_TOKEN;
-    if (!token) return;
-
     const body = {
         chat_id: chatId,
         text: text,
@@ -160,23 +242,9 @@ function sendTelegramWithButtons(chatId, text, buttons) {
         disable_web_page_preview: true
     };
     if (buttons) body.reply_markup = { inline_keyboard: buttons };
-
-    const payload = JSON.stringify(body);
-    const options = {
-        hostname: 'api.telegram.org',
-        path: `/bot${token}/sendMessage`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
-    };
-
-    const req = https.request(options, (res) => {
-        let d = '';
-        res.on('data', chunk => d += chunk);
-        res.on('end', () => {});
+    telegramRequest('sendMessage', body).then(result => {
+        if (!result.ok) logError('TG_SEND', result.description);
     });
-    req.on('error', () => {});
-    req.write(payload);
-    req.end();
 }
 
 // Handle incoming bot commands
@@ -266,60 +334,25 @@ function escapeHtml(text) {
 }
 
 function sendTelegram(message) {
-    const token = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
-    if (!token || !chatId) return;
+    if (!chatId) return;
 
-    const payload = JSON.stringify({
+    telegramRequest('sendMessage', {
         chat_id: chatId,
         text: message,
         parse_mode: 'HTML'
+    }).then(result => {
+        if (result.ok) console.log('✓ Telegram message sent');
+        else logError('TG_SEND', result.description);
     });
-
-    const options = {
-        hostname: 'api.telegram.org',
-        path: `/bot${token}/sendMessage`,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload)
-        }
-    };
-
-    const req = https.request(options, (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-            try {
-                const result = JSON.parse(data);
-                if (result.ok) {
-                    console.log('✓ Telegram message sent');
-                } else {
-                    console.error('Telegram API error:', result.description);
-                }
-            } catch (e) {
-                console.error('Telegram parse error:', e.message);
-            }
-        });
-    });
-
-    req.on('error', (err) => {
-        console.error('Telegram request error:', err.message);
-    });
-
-    req.write(payload);
-    req.end();
 }
 
 // Send multiple Telegram messages sequentially (last message gets inline buttons)
-function sendTelegramSequence(messages, lastMessageButtons) {
-    const token = process.env.TELEGRAM_BOT_TOKEN;
+async function sendTelegramSequence(messages, lastMessageButtons) {
     const chatId = process.env.TELEGRAM_CHAT_ID;
-    if (!token || !chatId || !messages.length) return;
+    if (!chatId || !messages.length) return;
 
-    let i = 0;
-    function sendNext() {
-        if (i >= messages.length) return;
+    for (let i = 0; i < messages.length; i++) {
         const isLast = (i === messages.length - 1);
         const body = {
             chat_id: chatId,
@@ -329,41 +362,19 @@ function sendTelegramSequence(messages, lastMessageButtons) {
         if (isLast && lastMessageButtons) {
             body.reply_markup = { inline_keyboard: lastMessageButtons };
         }
-        const payload = JSON.stringify(body);
-        const options = {
-            hostname: 'api.telegram.org',
-            path: `/bot${token}/sendMessage`,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': Buffer.byteLength(payload)
-            }
-        };
-        const req = https.request(options, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => {
-                try {
-                    const result = JSON.parse(data);
-                    if (result.ok) {
-                        console.log(`✓ TZ message ${i + 1}/${messages.length} sent`);
-                    } else {
-                        console.error('Telegram API error:', result.description);
-                    }
-                } catch (e) {
-                    console.error('Telegram parse error:', e.message);
-                }
-                i++;
-                if (i < messages.length) setTimeout(sendNext, 300);
-            });
-        });
-        req.on('error', (err) => {
-            console.error('Telegram request error:', err.message);
-        });
-        req.write(payload);
-        req.end();
+
+        const result = await telegramRequest('sendMessage', body);
+        if (result.ok) {
+            console.log(`✓ TZ message ${i + 1}/${messages.length} sent`);
+        } else {
+            logError('TZ_SEND', `Message ${i + 1}/${messages.length} failed: ${result.description}`);
+        }
+
+        // Small delay between messages
+        if (i < messages.length - 1) {
+            await new Promise(r => setTimeout(r, 300));
+        }
     }
-    sendNext();
 }
 
 // Build TZ messages from configurator data
@@ -385,12 +396,10 @@ function buildTZMessages(data, orderId) {
     // Look up package
     const pkgId = data.package?.id;
     let pkgName = '';
-    let pkgDesc = '';
     if (pkgId && siteTypeId && modulesDB?.packages?.[siteTypeId]) {
         const pkgDB = modulesDB.packages[siteTypeId].find(p => p.id === pkgId);
         if (pkgDB) {
             pkgName = pkgDB.name_ru || '';
-            pkgDesc = pkgDB.description_ru || '';
         }
     }
 
@@ -524,9 +533,17 @@ function buildTZMessages(data, orderId) {
 
 // ===== API ROUTES =====
 
-// Health check
+// Health check with diagnostics
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: Math.round(process.uptime()),
+        database: db ? 'connected' : 'disconnected',
+        modules: modulesDB ? 'loaded' : 'missing',
+        portfolio: portfolioDB ? 'loaded' : 'missing',
+        requestsInFlight
+    });
 });
 
 // Create lead (contact form)
@@ -577,7 +594,7 @@ app.post('/api/orders', leadsLimiter, (req, res) => {
 
         res.json({ success: true, message: 'Lead submitted successfully!' });
     } catch (error) {
-        console.error('Error creating order:', error);
+        logError('ORDER_CREATE', error);
         res.status(500).json({ error: 'Failed to submit lead' });
     }
 });
@@ -646,24 +663,33 @@ app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
 
         res.json({ success: true, message: 'Configuration submitted successfully!' });
     } catch (error) {
-        console.error('Error submitting configuration:', error);
+        logError('CONFIG_SUBMIT', error);
         res.status(500).json({ error: 'Failed to submit configuration' });
     }
 });
 
 // Telegram bot webhook — handles /start, /help, /projects
-app.post('/api/telegram/webhook', (req, res) => {
+app.post('/api/telegram/webhook', webhookLimiter, (req, res) => {
+    // Verify webhook secret (set during registration)
+    const secret = req.headers['x-telegram-bot-api-secret-token'];
+    if (secret && secret !== WEBHOOK_SECRET) {
+        return res.sendStatus(403);
+    }
+
     try {
         handleBotUpdate(req.body);
     } catch (e) {
-        console.error('Webhook error:', e.message);
+        logError('WEBHOOK', e);
     }
     res.sendStatus(200);
 });
 
 // ===== STATIC FILES =====
 const frontendPath = path.join(__dirname, '..', '..', 'frontend');
-app.use(express.static(frontendPath, { index: 'index.html' }));
+app.use(express.static(frontendPath, {
+    index: 'index.html',
+    maxAge: '1h', // Cache static files for 1 hour
+}));
 
 // SPA fallback - serve index.html for unknown routes
 app.get('*', (req, res) => {
@@ -672,69 +698,63 @@ app.get('*', (req, res) => {
 
 // ===== ERROR HANDLING =====
 app.use((err, req, res, next) => {
-    console.error('Error:', err.message);
+    logError('EXPRESS', err);
     res.status(500).json({ error: 'Internal server error' });
 });
 
 // ===== GRACEFUL SHUTDOWN =====
-process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down gracefully...');
-    saveDatabase();
-    if (db) db.close();
-    process.exit(0);
-});
+async function gracefulShutdown(signal) {
+    console.log(`${signal} received, shutting down gracefully...`);
 
-process.on('SIGINT', () => {
-    console.log('SIGINT received, shutting down gracefully...');
+    // Stop accepting new connections
+    if (server) {
+        server.close(() => console.log('✓ HTTP server closed'));
+    }
+
+    // Wait for in-flight requests (max 10 seconds)
+    let waited = 0;
+    while (requestsInFlight > 0 && waited < 10) {
+        console.log(`Waiting for ${requestsInFlight} requests to complete...`);
+        await new Promise(r => setTimeout(r, 1000));
+        waited++;
+    }
+
+    // Save database and exit
     saveDatabase();
     if (db) db.close();
+    console.log('✓ Database saved, exiting');
     process.exit(0);
-});
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // ===== START SERVER =====
 async function start() {
     try {
         await initDatabase();
-        app.listen(PORT, () => {
+        server = app.listen(PORT, async () => {
             console.log(`\n🚀 Sky Backend running on http://localhost:${PORT}`);
             console.log(`📁 Frontend served from: ${frontendPath}`);
             console.log(`📊 Database: ${DB_PATH}\n`);
 
             // Register bot commands on startup
-            setBotCommands();
+            await setBotCommands();
 
             // Set webhook if in production (RENDER_EXTERNAL_URL available)
             const externalUrl = process.env.RENDER_EXTERNAL_URL;
             if (externalUrl) {
                 const webhookUrl = `${externalUrl}/api/telegram/webhook`;
-                const token = process.env.TELEGRAM_BOT_TOKEN;
-                if (token) {
-                    const payload = JSON.stringify({ url: webhookUrl });
-                    const options = {
-                        hostname: 'api.telegram.org',
-                        path: `/bot${token}/setWebhook`,
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
-                    };
-                    const req = https.request(options, (res) => {
-                        let d = '';
-                        res.on('data', chunk => d += chunk);
-                        res.on('end', () => {
-                            try {
-                                const result = JSON.parse(d);
-                                if (result.ok) console.log(`✓ Webhook set: ${webhookUrl}`);
-                                else console.error('setWebhook error:', result.description);
-                            } catch (e) { /* ignore */ }
-                        });
-                    });
-                    req.on('error', () => {});
-                    req.write(payload);
-                    req.end();
-                }
+                const result = await telegramRequest('setWebhook', {
+                    url: webhookUrl,
+                    secret_token: WEBHOOK_SECRET
+                });
+                if (result.ok) console.log(`✓ Webhook set: ${webhookUrl}`);
+                else logError('WEBHOOK_SET', result.description);
             }
         });
     } catch (error) {
-        console.error('Failed to start server:', error);
+        logError('STARTUP_FATAL', error);
         process.exit(1);
     }
 }
