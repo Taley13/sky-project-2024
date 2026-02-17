@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
+const compression = require('compression');
 const initSqlJs = require('sql.js');
 const fs = require('fs');
 
@@ -20,15 +21,62 @@ const DB_PATH = path.join(__dirname, 'database.sqlite');
 const WEBHOOK_SECRET = crypto.randomBytes(32).toString('hex');
 const TELEGRAM_TIMEOUT = 5000; // 5 seconds
 const TELEGRAM_MAX_RETRIES = 3;
+const FAILED_QUEUE_PATH = path.join(__dirname, 'failed-messages.json');
 
 let db;
 let server; // HTTP server reference for graceful shutdown
 let requestsInFlight = 0;
+let dbSaveInterval;
 
 // ===== ERROR LOGGING =====
 function logError(context, err) {
     const msg = `[${new Date().toISOString()}] [${context}] ${err?.message || err}`;
     console.error(msg);
+}
+
+// ===== FAILED MESSAGE QUEUE =====
+function saveFailedMessage(method, body) {
+    try {
+        let queue = [];
+        if (fs.existsSync(FAILED_QUEUE_PATH)) {
+            queue = JSON.parse(fs.readFileSync(FAILED_QUEUE_PATH, 'utf-8'));
+        }
+        queue.push({ method, body, timestamp: new Date().toISOString() });
+        // Keep max 50 messages
+        if (queue.length > 50) queue = queue.slice(-50);
+        fs.writeFileSync(FAILED_QUEUE_PATH, JSON.stringify(queue, null, 2));
+        logError('TG_QUEUE', `Saved to retry queue (${queue.length} pending)`);
+    } catch (e) {
+        logError('TG_QUEUE_SAVE', e);
+    }
+}
+
+async function retryFailedMessages() {
+    if (!fs.existsSync(FAILED_QUEUE_PATH)) return;
+    try {
+        const queue = JSON.parse(fs.readFileSync(FAILED_QUEUE_PATH, 'utf-8'));
+        if (!queue.length) return;
+        console.log(`Retrying ${queue.length} failed messages...`);
+        const remaining = [];
+        for (const msg of queue) {
+            const result = await telegramRequest(msg.method, msg.body);
+            if (result.ok) {
+                console.log(`✓ Retry success: ${msg.method}`);
+            } else {
+                remaining.push(msg);
+            }
+            await new Promise(r => setTimeout(r, 500));
+        }
+        if (remaining.length) {
+            fs.writeFileSync(FAILED_QUEUE_PATH, JSON.stringify(remaining, null, 2));
+            console.log(`${remaining.length} messages still pending`);
+        } else {
+            fs.unlinkSync(FAILED_QUEUE_PATH);
+            console.log('✓ All queued messages sent');
+        }
+    } catch (e) {
+        logError('TG_RETRY', e);
+    }
 }
 
 // Load modules DB for TZ generation
@@ -58,6 +106,9 @@ app.use(cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:4000',
     credentials: true
 }));
+
+// ===== COMPRESSION =====
+app.use(compression());
 
 // ===== PARSING =====
 app.use(express.json({ limit: '1mb' }));
@@ -198,6 +249,7 @@ function telegramRequest(method, body, retries = 0) {
                 }, delay);
             } else {
                 logError('TG_TIMEOUT', `${method} failed after ${TELEGRAM_MAX_RETRIES} retries`);
+                if (method === 'sendMessage') saveFailedMessage(method, body);
                 resolve({ ok: false, description: 'Timeout after retries' });
             }
         });
@@ -211,6 +263,7 @@ function telegramRequest(method, body, retries = 0) {
                 }, delay);
             } else {
                 logError('TG_ERROR', `${method} failed after ${TELEGRAM_MAX_RETRIES} retries: ${err.message}`);
+                if (method === 'sendMessage') saveFailedMessage(method, body);
                 resolve({ ok: false, description: err.message });
             }
         });
@@ -226,7 +279,8 @@ async function setBotCommands() {
         commands: [
             { command: 'start', description: 'Приветствие' },
             { command: 'help', description: 'Как пользоваться' },
-            { command: 'projects', description: 'Наше портфолио' }
+            { command: 'projects', description: 'Наше портфолио' },
+            { command: 'orders', description: 'Последние заявки' }
         ]
     });
     if (result.ok) console.log('✓ Bot commands registered');
@@ -319,6 +373,45 @@ function handleBotUpdate(update) {
         buttons.push([{ text: '📁 Все проекты', url: `${SITE_URL}/portfolio.html` }]);
 
         sendTelegramWithButtons(chatId, lines.join('\n'), buttons);
+    } else if (text === '/orders') {
+        if (!db) {
+            sendTelegramWithButtons(chatId, '❌ База данных недоступна', []);
+            return;
+        }
+
+        try {
+            const rows = db.exec(`
+                SELECT id, name, phone, email, page, created_at
+                FROM orders
+                ORDER BY id DESC
+                LIMIT 10
+            `);
+
+            if (!rows.length || !rows[0].values.length) {
+                sendTelegramWithButtons(chatId, '📭 Заявок пока нет', [
+                    [{ text: '⚙️ Конфигуратор', url: `${SITE_URL}/services.html` }]
+                ]);
+                return;
+            }
+
+            const lines = [`<b>📋 Последние заявки (${rows[0].values.length}):</b>`, ''];
+
+            rows[0].values.forEach(([id, name, phone, email, page, createdAt]) => {
+                const date = createdAt ? new Date(createdAt).toLocaleDateString('ru-RU') : '—';
+                const source = page === 'configurator' ? '⚙️' : '📝';
+                lines.push(`${source} <b>#${id}</b> ${escapeHtml(name)}`);
+                lines.push(`   📞 ${escapeHtml(phone)}${email ? ` | 📧 ${escapeHtml(email)}` : ''}`);
+                lines.push(`   📅 ${date}`);
+                lines.push('');
+            });
+
+            sendTelegramWithButtons(chatId, lines.join('\n'), [
+                [{ text: '🌐 Админка', url: `${SITE_URL}` }]
+            ]);
+        } catch (e) {
+            logError('BOT_ORDERS', e);
+            sendTelegramWithButtons(chatId, '❌ Ошибка загрузки заявок', []);
+        }
     }
 }
 
@@ -684,6 +777,14 @@ app.post('/api/telegram/webhook', webhookLimiter, (req, res) => {
     res.sendStatus(200);
 });
 
+// ===== MODULES API (single source of truth) =====
+app.get('/api/modules', (req, res) => {
+    if (!modulesDB) {
+        return res.status(503).json({ error: 'Modules data not loaded' });
+    }
+    res.json(modulesDB);
+});
+
 // ===== STATIC FILES =====
 const frontendPath = path.join(__dirname, '..', '..', 'frontend');
 app.use(express.static(frontendPath, {
@@ -705,6 +806,9 @@ app.use((err, req, res, next) => {
 // ===== GRACEFUL SHUTDOWN =====
 async function gracefulShutdown(signal) {
     console.log(`${signal} received, shutting down gracefully...`);
+
+    // Stop auto-save interval
+    if (dbSaveInterval) clearInterval(dbSaveInterval);
 
     // Stop accepting new connections
     if (server) {
@@ -752,6 +856,15 @@ async function start() {
                 if (result.ok) console.log(`✓ Webhook set: ${webhookUrl}`);
                 else logError('WEBHOOK_SET', result.description);
             }
+
+            // Retry any failed Telegram messages from previous session
+            await retryFailedMessages();
+
+            // Auto-save database every 5 minutes
+            dbSaveInterval = setInterval(() => {
+                saveDatabase();
+                console.log('✓ Database auto-saved');
+            }, 5 * 60 * 1000);
         });
     } catch (error) {
         logError('STARTUP_FATAL', error);
