@@ -639,6 +639,24 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// List orders (read-only, for admin checks)
+app.get('/api/orders', (req, res) => {
+    try {
+        const rows = db.exec('SELECT id, name, phone, email, comment, page, product_key, status, created_at FROM orders ORDER BY id DESC LIMIT 50');
+        if (!rows.length) return res.json([]);
+        const columns = rows[0].columns;
+        const orders = rows[0].values.map(row => {
+            const obj = {};
+            columns.forEach((col, i) => obj[col] = row[i]);
+            return obj;
+        });
+        res.json(orders);
+    } catch (e) {
+        logError('ORDERS_LIST', e);
+        res.json([]);
+    }
+});
+
 // Create lead (contact form)
 app.post('/api/orders', leadsLimiter, (req, res) => {
     const { name, phone, email, rental_period, comment, page, product_key } = req.body;
