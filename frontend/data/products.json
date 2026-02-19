@@ -1,0 +1,160 @@
+{
+  "categories": [
+    { "id": "all", "name_en": "All", "name_ru": "Все" },
+    { "id": "electronics", "name_en": "Electronics", "name_ru": "Электроника" },
+    { "id": "accessories", "name_en": "Accessories", "name_ru": "Аксессуары" },
+    { "id": "clothing", "name_en": "Clothing", "name_ru": "Одежда" }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "sku": "ELEC-001",
+      "category": "electronics",
+      "price": 299,
+      "old_price": 349,
+      "currency": "€",
+      "stock": 15,
+      "visible": true,
+      "sort_order": 1,
+      "cover_image": "",
+      "tags": ["new", "popular"],
+      "translations": {
+        "en": {
+          "title": "Wireless Headphones Pro",
+          "subtitle": "Premium noise-cancelling",
+          "description": "Experience crystal-clear audio with active noise cancellation. 30-hour battery life, premium comfort, and seamless Bluetooth 5.3 connectivity."
+        },
+        "ru": {
+          "title": "Беспроводные наушники Pro",
+          "subtitle": "Премиум шумоподавление",
+          "description": "Кристально чистый звук с активным шумоподавлением. 30 часов работы, премиальный комфорт и Bluetooth 5.3."
+        }
+      }
+    },
+    {
+      "id": 2,
+      "sku": "ELEC-002",
+      "category": "electronics",
+      "price": 199,
+      "old_price": null,
+      "currency": "€",
+      "stock": 8,
+      "visible": true,
+      "sort_order": 2,
+      "cover_image": "",
+      "tags": [],
+      "translations": {
+        "en": {
+          "title": "Smart Watch Ultra",
+          "subtitle": "Fitness & lifestyle tracker",
+          "description": "Track your health 24/7 with heart rate, SpO2, sleep analysis. Water-resistant to 50m. GPS built-in."
+        },
+        "ru": {
+          "title": "Смарт-часы Ultra",
+          "subtitle": "Фитнес и трекер здоровья",
+          "description": "Отслеживайте здоровье 24/7: пульс, SpO2, анализ сна. Водонепроницаемость 50м. Встроенный GPS."
+        }
+      }
+    },
+    {
+      "id": 3,
+      "sku": "ACC-001",
+      "category": "accessories",
+      "price": 49,
+      "old_price": 69,
+      "currency": "€",
+      "stock": 50,
+      "visible": true,
+      "sort_order": 3,
+      "cover_image": "",
+      "tags": ["sale"],
+      "translations": {
+        "en": {
+          "title": "Leather Laptop Sleeve",
+          "subtitle": "Premium Italian leather",
+          "description": "Handcrafted from genuine Italian leather. Fits 13-15\" laptops. Soft microfiber interior protects your device."
+        },
+        "ru": {
+          "title": "Кожаный чехол для ноутбука",
+          "subtitle": "Итальянская кожа премиум",
+          "description": "Ручная работа из натуральной итальянской кожи. Для ноутбуков 13-15\". Мягкая микрофибра внутри."
+        }
+      }
+    },
+    {
+      "id": 4,
+      "sku": "CLO-001",
+      "category": "clothing",
+      "price": 89,
+      "old_price": null,
+      "currency": "€",
+      "stock": 25,
+      "visible": true,
+      "sort_order": 4,
+      "cover_image": "",
+      "tags": ["new"],
+      "translations": {
+        "en": {
+          "title": "Merino Wool Sweater",
+          "subtitle": "Ultra-soft & breathable",
+          "description": "100% Australian merino wool. Temperature-regulating, odor-resistant. Perfect for all seasons."
+        },
+        "ru": {
+          "title": "Свитер из мериносовой шерсти",
+          "subtitle": "Мягкий и дышащий",
+          "description": "100% австралийская мериносовая шерсть. Терморегуляция, устойчивость к запахам. На все сезоны."
+        }
+      }
+    },
+    {
+      "id": 5,
+      "sku": "ELEC-003",
+      "category": "electronics",
+      "price": 159,
+      "old_price": 199,
+      "currency": "€",
+      "stock": 12,
+      "visible": true,
+      "sort_order": 5,
+      "cover_image": "",
+      "tags": ["sale", "popular"],
+      "translations": {
+        "en": {
+          "title": "Portable Bluetooth Speaker",
+          "subtitle": "360° immersive sound",
+          "description": "Powerful 360-degree sound in a compact design. 20-hour battery, IP67 waterproof, built-in microphone."
+        },
+        "ru": {
+          "title": "Портативная Bluetooth-колонка",
+          "subtitle": "Объёмный звук 360°",
+          "description": "Мощный звук 360° в компактном корпусе. 20 часов работы, IP67 водозащита, встроенный микрофон."
+        }
+      }
+    },
+    {
+      "id": 6,
+      "sku": "ACC-002",
+      "category": "accessories",
+      "price": 35,
+      "old_price": null,
+      "currency": "€",
+      "stock": 100,
+      "visible": true,
+      "sort_order": 6,
+      "cover_image": "",
+      "tags": [],
+      "translations": {
+        "en": {
+          "title": "Minimalist Card Wallet",
+          "subtitle": "RFID-blocking slim design",
+          "description": "Ultra-thin card holder with RFID protection. Holds up to 8 cards + cash. Premium vegan leather."
+        },
+        "ru": {
+          "title": "Минималистичный картхолдер",
+          "subtitle": "RFID-защита, тонкий дизайн",
+          "description": "Ультратонкий картхолдер с RFID-защитой. До 8 карт + наличные. Премиальная экокожа."
+        }
+      }
+    }
+  ]
+}

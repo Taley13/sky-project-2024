@@ -96,13 +96,47 @@
     font-style: italic;
 }
 
+/* === Checkout Page Styles === */
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: start;
+}
+
+.checkout-cart h3 {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.checkout-continue {
+    display: inline-block;
+    margin-top: 16px;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+.checkout-continue:hover { opacity: 0.8; }
+
+.btn-checkout {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.05rem;
+    margin-top: 8px;
+}
+
 @media (max-width: 768px) {
     .contact-grid { grid-template-columns: 1fr; gap: 32px; }
+    .checkout-grid { grid-template-columns: 1fr; gap: 32px; }
     .contact-section { padding: 40px 0 60px; }
 }
 
 @media (max-width: 480px) {
     .contact-grid { gap: 24px; }
+    .checkout-grid { gap: 24px; }
     .contact-section { padding: 24px 0 40px; }
     .info-card { padding: 20px 16px; }
     .info-card h3 { font-size: 0.75rem; margin-bottom: 8px; }

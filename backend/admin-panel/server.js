@@ -710,6 +710,87 @@ app.post('/api/orders', leadsLimiter, (req, res) => {
     }
 });
 
+// Shop order — products from catalog with delivery
+app.post('/api/shop/order', leadsLimiter, (req, res) => {
+    const { name, phone, email, city, address, comment, items, total, currency } = req.body;
+
+    if (!name || !phone) {
+        return res.status(400).json({ error: 'Name and phone are required' });
+    }
+    if (name.length > 100 || phone.length > 50) {
+        return res.status(400).json({ error: 'Input too long' });
+    }
+    if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'Cart is empty' });
+    }
+
+    try {
+        const curr = currency || 'EUR';
+        const currSymbol = { EUR: '€', USD: '$', RUB: '₽' }[curr] || '€';
+        const itemsSummary = items.map(i => `${i.title} x${i.qty}`).join(', ');
+
+        // Save to database
+        db.run(
+            `INSERT INTO orders (name, phone, email, comment, page, product_key, status)
+             VALUES (?, ?, ?, ?, ?, ?, 'new')`,
+            [name, phone, email || '', `Shop: ${itemsSummary} | ${city || ''}, ${address || ''} | ${comment || ''}`, 'shop', 'shop_order']
+        );
+        saveDatabase();
+
+        const result = db.exec('SELECT last_insert_rowid() as id');
+        const orderId = result[0]?.values[0]?.[0] || 0;
+        const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Warsaw' });
+
+        // Build Telegram message
+        const lines = [
+            `<b>🛒 ЗАКАЗ ИЗ МАГАЗИНА #${String(orderId).padStart(4, '0')}</b>`,
+            ``,
+            `<b>👤 ПОКУПАТЕЛЬ</b>`,
+            `Имя: ${escapeHtml(name)}`,
+            `Телефон: ${escapeHtml(phone)}`,
+            email ? `Email: ${escapeHtml(email)}` : null,
+            ``,
+            `<b>📦 ТОВАРЫ (${items.length} шт.)</b>`,
+        ];
+
+        let itemsTotal = 0;
+        items.forEach((item, idx) => {
+            const lineTotal = (item.price || 0) * (item.qty || 1);
+            itemsTotal += lineTotal;
+            lines.push(`${idx + 1}. ${escapeHtml(item.title)} × ${item.qty} = ${currSymbol}${lineTotal.toLocaleString()}`);
+        });
+
+        lines.push(``);
+        lines.push(`<b>💰 ИТОГО: ${currSymbol}${(total || itemsTotal).toLocaleString()}</b>`);
+        lines.push(``);
+
+        if (city || address) {
+            lines.push(`<b>🚚 ДОСТАВКА</b>`);
+            if (city) lines.push(`Город: ${escapeHtml(city)}`);
+            if (address) lines.push(`Адрес: ${escapeHtml(address)}`);
+            lines.push(``);
+        }
+
+        if (comment) {
+            lines.push(`<b>💬 Комментарий:</b> ${escapeHtml(comment)}`);
+            lines.push(``);
+        }
+
+        lines.push(`⏰ ${timestamp}`);
+
+        const buttons = [
+            [{ text: '💬 Написать покупателю', url: `https://t.me/+${(phone || '').replace(/[^\d]/g, '')}` }]
+        ];
+
+        sendTelegramWithButtons(process.env.TELEGRAM_CHAT_ID, lines.filter(Boolean).join('\n'), buttons);
+
+        res.json({ success: true, message: 'Order placed successfully!' });
+    } catch (error) {
+        logError('SHOP_ORDER', error);
+        res.status(500).json({ error: 'Failed to place order' });
+    }
+});
+
 // Configurator lead — sends full TZ to Telegram
 app.post('/api/telegram/configurator', leadsLimiter, (req, res) => {
     const {

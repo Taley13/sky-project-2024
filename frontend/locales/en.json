@@ -5,6 +5,8 @@
     },
     "nav": {
         "home": "Home",
+        "catalog": "Catalog",
+        "checkout": "Checkout",
         "services": "Services",
         "portfolio": "Portfolio",
         "contacts": "Contact"
@@ -12,6 +14,7 @@
     "hero": {
         "title": "WHERE YOUR IDEAS<br><span class=\"hero-accent\">REACH THE SKY</span>",
         "subtitle": "Sky — Professional Brief",
+        "button_catalog": "Browse Catalog",
         "button_services": "Our Services",
         "button_contact": "Contact Us"
     },
@@ -76,6 +79,27 @@
         "description": "Web development studio. We build websites that elevate brands and deliver results.",
         "nav_title": "Navigation",
         "contact_title": "Contact"
+    },
+    "catalog": {
+        "title": "CATALOG",
+        "subtitle": "Find what you need",
+        "empty": "No products found"
+    },
+    "checkout": {
+        "title": "CHECKOUT",
+        "subtitle": "Complete your order",
+        "your_order": "Your Order",
+        "continue_shopping": "← Continue shopping",
+        "contact_info": "Contact Information",
+        "delivery": "Delivery Address",
+        "city": "City",
+        "address": "Address",
+        "comment": "Comment",
+        "comment_ph": "Any special requests?",
+        "place_order": "Place Order",
+        "success_title": "Order Placed!",
+        "success_msg": "Thank you! We've received your order and will contact you shortly.",
+        "back_to_catalog": "Back to Catalog"
     },
     "configurator": {
         "title": "Build Your Perfect Website",
