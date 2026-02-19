@@ -81,9 +81,9 @@
         "contact_title": "Contact"
     },
     "catalog": {
-        "title": "CATALOG",
-        "subtitle": "Find what you need",
-        "empty": "No products found"
+        "title": "OUR SERVICES",
+        "subtitle": "Choose the perfect solution for your business",
+        "empty": "No services found"
     },
     "checkout": {
         "title": "CHECKOUT",

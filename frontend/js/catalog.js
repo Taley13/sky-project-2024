@@ -87,11 +87,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }).join('');
             }
 
-            // Stock status
-            const stockClass = product.stock > 0 ? 'in-stock' : 'out-of-stock';
-            const stockText = product.stock > 0
-                ? (lang() === 'ru' ? 'В наличии' : 'In stock')
-                : (lang() === 'ru' ? 'Нет в наличии' : 'Out of stock');
+            // Service status
+            const statusText = product['status_' + lang()] || product.status_en || (lang() === 'ru' ? 'Доступно' : 'Available');
+            const stockClass = 'in-stock';
 
             card.innerHTML = `
                 <div class="catalog-card-header">
@@ -104,11 +102,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ${product.old_price ? `<span class="catalog-price-old">${SkyCart.fmtPrice(product.old_price)}</span>` : ''}
                         <span class="catalog-price-current">${SkyCart.fmtPrice(product.price)}</span>
                     </div>
-                    <div class="catalog-card-stock ${stockClass}">${stockText}</div>
+                    <div class="catalog-card-stock ${stockClass}">${statusText}</div>
                     <div class="catalog-card-actions">
                         <button class="catalog-btn-details">${lang() === 'ru' ? 'Подробнее' : 'Details'}</button>
-                        <button class="catalog-btn-cart ${inCart ? 'in-cart' : ''}" data-id="${product.id}" ${product.stock <= 0 ? 'disabled' : ''}>
-                            ${inCart ? (lang() === 'ru' ? '✓ В корзине' : '✓ In cart') : (lang() === 'ru' ? 'В корзину' : 'Add to cart')}
+                        <button class="catalog-btn-cart ${inCart ? 'in-cart' : ''}" data-id="${product.id}">
+                            ${inCart ? (lang() === 'ru' ? '✓ В корзине' : '✓ In cart') : (lang() === 'ru' ? 'Заказать' : 'Order')}
                         </button>
                     </div>
                 </div>`;
@@ -122,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Add to cart button
             card.querySelector('.catalog-btn-cart').addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (product.stock <= 0) return;
                 SkyCart.addItem(product, 1);
                 showToast(lang() === 'ru'
                     ? `${tr.title} — добавлен в корзину`
@@ -144,6 +141,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const cartItems = SkyCart.getItems();
         const inCart = cartItems.find(i => i.id === product.id);
 
+        const statusText = product['status_' + lang()] || product.status_en || (lang() === 'ru' ? 'Доступно' : 'Available');
+
         body.innerHTML = `
             <h2>${tr.title || product.sku}</h2>
             <p class="modal-subtitle">${tr.subtitle || ''}</p>
@@ -152,41 +151,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ${product.old_price ? `<span class="catalog-price-old">${SkyCart.fmtPrice(product.old_price)}</span>` : ''}
                 <span class="catalog-price-current modal-price-large">${SkyCart.fmtPrice(product.price)}</span>
             </div>
-            <div class="modal-stock ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
-                ${product.stock > 0
-                    ? (lang() === 'ru' ? `В наличии: ${product.stock} шт.` : `In stock: ${product.stock}`)
-                    : (lang() === 'ru' ? 'Нет в наличии' : 'Out of stock')}
-            </div>
-            <div class="modal-qty">
-                <label>${lang() === 'ru' ? 'Количество' : 'Quantity'}:</label>
-                <div class="qty-controls">
-                    <button class="qty-btn qty-minus">−</button>
-                    <input type="number" class="qty-input" value="${inCart ? inCart.qty : 1}" min="1" max="${product.stock}">
-                    <button class="qty-btn qty-plus">+</button>
-                </div>
-            </div>
-            <button class="modal-add-btn" ${product.stock <= 0 ? 'disabled' : ''}>
+            <div class="modal-stock in-stock">${statusText}</div>
+            <button class="modal-add-btn">
                 ${inCart
-                    ? (lang() === 'ru' ? '✓ Обновить корзину' : '✓ Update cart')
-                    : (lang() === 'ru' ? 'Добавить в корзину' : 'Add to cart')}
+                    ? (lang() === 'ru' ? '✓ Уже в корзине' : '✓ Already in cart')
+                    : (lang() === 'ru' ? 'Заказать' : 'Order now')}
             </button>`;
 
-        // Qty controls
-        const qtyInput = body.querySelector('.qty-input');
-        body.querySelector('.qty-minus').addEventListener('click', () => {
-            qtyInput.value = Math.max(1, Number(qtyInput.value) - 1);
-        });
-        body.querySelector('.qty-plus').addEventListener('click', () => {
-            qtyInput.value = Math.min(product.stock, Number(qtyInput.value) + 1);
-        });
-
-        // Add to cart
+        // Add to cart (services are always qty 1)
         body.querySelector('.modal-add-btn').addEventListener('click', () => {
-            const qty = Number(qtyInput.value) || 1;
-            if (inCart) {
-                SkyCart.updateQty(product.id, qty);
-            } else {
-                SkyCart.addItem(product, qty);
+            if (!inCart) {
+                SkyCart.addItem(product, 1);
             }
             showToast(lang() === 'ru'
                 ? `${tr.title} — добавлен в корзину`

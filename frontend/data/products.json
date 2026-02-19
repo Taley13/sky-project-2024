@@ -1,158 +1,170 @@
 {
   "categories": [
     { "id": "all", "name_en": "All", "name_ru": "Все" },
-    { "id": "electronics", "name_en": "Electronics", "name_ru": "Электроника" },
-    { "id": "accessories", "name_en": "Accessories", "name_ru": "Аксессуары" },
-    { "id": "clothing", "name_en": "Clothing", "name_ru": "Одежда" }
+    { "id": "shops", "name_en": "Online Stores", "name_ru": "Интернет-магазины" },
+    { "id": "landings", "name_en": "Landing Pages", "name_ru": "Лендинги" },
+    { "id": "catalogs", "name_en": "Catalogs", "name_ru": "Каталоги" }
   ],
   "products": [
     {
       "id": 1,
-      "sku": "ELEC-001",
-      "category": "electronics",
-      "price": 299,
-      "old_price": 349,
+      "sku": "SHOP-001",
+      "category": "shops",
+      "price": 1500,
+      "old_price": 1800,
       "currency": "€",
-      "stock": 15,
+      "stock": 99,
+      "status_en": "Turnkey",
+      "status_ru": "Под ключ",
       "visible": true,
       "sort_order": 1,
       "cover_image": "",
-      "tags": ["new", "popular"],
+      "tags": ["popular"],
       "translations": {
         "en": {
-          "title": "Wireless Headphones Pro",
-          "subtitle": "Premium noise-cancelling",
-          "description": "Experience crystal-clear audio with active noise cancellation. 30-hour battery life, premium comfort, and seamless Bluetooth 5.3 connectivity."
+          "title": "Turnkey Online Store",
+          "subtitle": "Full e-commerce solution with cart & payments",
+          "description": "Complete online store with product catalog, shopping cart, secure checkout, payment integration (Stripe, PayPal), order management, and admin panel. Mobile-responsive design, SEO optimization, and 30-day post-launch support included."
         },
         "ru": {
-          "title": "Беспроводные наушники Pro",
-          "subtitle": "Премиум шумоподавление",
-          "description": "Кристально чистый звук с активным шумоподавлением. 30 часов работы, премиальный комфорт и Bluetooth 5.3."
+          "title": "Интернет-магазин под ключ",
+          "subtitle": "Полноценный e-commerce с корзиной и оплатой",
+          "description": "Полноценный интернет-магазин: каталог товаров, корзина, безопасный чекаут, интеграция платежей (Stripe, PayPal), управление заказами и админ-панель. Адаптивный дизайн, SEO-оптимизация и 30 дней поддержки после запуска."
         }
       }
     },
     {
       "id": 2,
-      "sku": "ELEC-002",
-      "category": "electronics",
-      "price": 199,
+      "sku": "SHOP-002",
+      "category": "shops",
+      "price": 2500,
       "old_price": null,
       "currency": "€",
-      "stock": 8,
+      "stock": 99,
+      "status_en": "Premium",
+      "status_ru": "Премиум",
       "visible": true,
       "sort_order": 2,
       "cover_image": "",
-      "tags": [],
+      "tags": ["new"],
       "translations": {
         "en": {
-          "title": "Smart Watch Ultra",
-          "subtitle": "Fitness & lifestyle tracker",
-          "description": "Track your health 24/7 with heart rate, SpO2, sleep analysis. Water-resistant to 50m. GPS built-in."
+          "title": "Premium Online Store",
+          "subtitle": "Advanced e-commerce with CRM & analytics",
+          "description": "Everything in the Turnkey package plus: CRM integration, advanced analytics dashboard, multi-language support, loyalty program, automated email marketing, inventory management, and 90-day priority support."
         },
         "ru": {
-          "title": "Смарт-часы Ultra",
-          "subtitle": "Фитнес и трекер здоровья",
-          "description": "Отслеживайте здоровье 24/7: пульс, SpO2, анализ сна. Водонепроницаемость 50м. Встроенный GPS."
+          "title": "Премиум интернет-магазин",
+          "subtitle": "Продвинутый e-commerce с CRM и аналитикой",
+          "description": "Всё из пакета «Под ключ» плюс: интеграция CRM, расширенная панель аналитики, мультиязычность, программа лояльности, автоматические email-рассылки, управление складом и 90 дней приоритетной поддержки."
         }
       }
     },
     {
       "id": 3,
-      "sku": "ACC-001",
-      "category": "accessories",
-      "price": 49,
-      "old_price": 69,
+      "sku": "LAND-001",
+      "category": "landings",
+      "price": 500,
+      "old_price": 650,
       "currency": "€",
-      "stock": 50,
+      "stock": 99,
+      "status_en": "Fast delivery",
+      "status_ru": "Быстрая сдача",
       "visible": true,
       "sort_order": 3,
       "cover_image": "",
       "tags": ["sale"],
       "translations": {
         "en": {
-          "title": "Leather Laptop Sleeve",
-          "subtitle": "Premium Italian leather",
-          "description": "Handcrafted from genuine Italian leather. Fits 13-15\" laptops. Soft microfiber interior protects your device."
+          "title": "Business Landing Page",
+          "subtitle": "High-converting single page for your product",
+          "description": "Professional landing page designed for maximum conversion. Includes: hero section, benefits block, testimonials, FAQ, contact form with Telegram notifications. Delivery in 5-7 business days."
         },
         "ru": {
-          "title": "Кожаный чехол для ноутбука",
-          "subtitle": "Итальянская кожа премиум",
-          "description": "Ручная работа из натуральной итальянской кожи. Для ноутбуков 13-15\". Мягкая микрофибра внутри."
+          "title": "Лендинг для бизнеса",
+          "subtitle": "Конверсионная страница для вашего продукта",
+          "description": "Профессиональный лендинг для максимальной конверсии. Включает: главный экран, блок преимуществ, отзывы, FAQ, форму обратной связи с уведомлениями в Telegram. Срок — 5-7 рабочих дней."
         }
       }
     },
     {
       "id": 4,
-      "sku": "CLO-001",
-      "category": "clothing",
-      "price": 89,
+      "sku": "LAND-002",
+      "category": "landings",
+      "price": 800,
       "old_price": null,
       "currency": "€",
-      "stock": 25,
+      "stock": 99,
+      "status_en": "With support",
+      "status_ru": "С поддержкой",
       "visible": true,
       "sort_order": 4,
       "cover_image": "",
-      "tags": ["new"],
+      "tags": [],
       "translations": {
         "en": {
-          "title": "Merino Wool Sweater",
-          "subtitle": "Ultra-soft & breathable",
-          "description": "100% Australian merino wool. Temperature-regulating, odor-resistant. Perfect for all seasons."
+          "title": "Multi-Page Landing",
+          "subtitle": "3-5 pages with animations & integrations",
+          "description": "Multi-page website with smooth scroll animations, parallax effects, integrated contact forms, Google Maps, social media feeds, and analytics. Perfect for services, portfolios, and small businesses. 60-day support included."
         },
         "ru": {
-          "title": "Свитер из мериносовой шерсти",
-          "subtitle": "Мягкий и дышащий",
-          "description": "100% австралийская мериносовая шерсть. Терморегуляция, устойчивость к запахам. На все сезоны."
+          "title": "Мультистраничный лендинг",
+          "subtitle": "3-5 страниц с анимациями и интеграциями",
+          "description": "Мультистраничный сайт с плавными анимациями, параллакс-эффектами, формами обратной связи, Google Maps, лентой соцсетей и аналитикой. Идеально для услуг, портфолио и малого бизнеса. 60 дней поддержки."
         }
       }
     },
     {
       "id": 5,
-      "sku": "ELEC-003",
-      "category": "electronics",
-      "price": 159,
-      "old_price": 199,
+      "sku": "CAT-001",
+      "category": "catalogs",
+      "price": 900,
+      "old_price": 1100,
       "currency": "€",
-      "stock": 12,
+      "stock": 99,
+      "status_en": "Turnkey",
+      "status_ru": "Под ключ",
       "visible": true,
       "sort_order": 5,
       "cover_image": "",
       "tags": ["sale", "popular"],
       "translations": {
         "en": {
-          "title": "Portable Bluetooth Speaker",
-          "subtitle": "360° immersive sound",
-          "description": "Powerful 360-degree sound in a compact design. 20-hour battery, IP67 waterproof, built-in microphone."
+          "title": "Product Catalog Website",
+          "subtitle": "Showcase your products with filters & search",
+          "description": "Elegant catalog website with category filters, smart search, product cards with details modal, and inquiry form. Admin panel for managing products. Perfect for manufacturers and wholesalers."
         },
         "ru": {
-          "title": "Портативная Bluetooth-колонка",
-          "subtitle": "Объёмный звук 360°",
-          "description": "Мощный звук 360° в компактном корпусе. 20 часов работы, IP67 водозащита, встроенный микрофон."
+          "title": "Сайт-каталог товаров",
+          "subtitle": "Витрина товаров с фильтрами и поиском",
+          "description": "Элегантный сайт-каталог с фильтрами по категориям, умным поиском, карточками товаров с модальным окном и формой заявки. Админ-панель для управления товарами. Идеально для производителей и оптовиков."
         }
       }
     },
     {
       "id": 6,
-      "sku": "ACC-002",
-      "category": "accessories",
-      "price": 35,
+      "sku": "CAT-002",
+      "category": "catalogs",
+      "price": 1200,
       "old_price": null,
       "currency": "€",
-      "stock": 100,
+      "stock": 99,
+      "status_en": "With support",
+      "status_ru": "С поддержкой",
       "visible": true,
       "sort_order": 6,
       "cover_image": "",
-      "tags": [],
+      "tags": ["new"],
       "translations": {
         "en": {
-          "title": "Minimalist Card Wallet",
-          "subtitle": "RFID-blocking slim design",
-          "description": "Ultra-thin card holder with RFID protection. Holds up to 8 cards + cash. Premium vegan leather."
+          "title": "Services Catalog + Booking",
+          "subtitle": "Catalog with online booking system",
+          "description": "Comprehensive service catalog with online booking/scheduling, calendar integration, automated reminders via Telegram/email, client reviews, and payment processing. Ideal for salons, clinics, and consultants."
         },
         "ru": {
-          "title": "Минималистичный картхолдер",
-          "subtitle": "RFID-защита, тонкий дизайн",
-          "description": "Ультратонкий картхолдер с RFID-защитой. До 8 карт + наличные. Премиальная экокожа."
+          "title": "Каталог услуг + бронирование",
+          "subtitle": "Каталог с системой онлайн-записи",
+          "description": "Полноценный каталог услуг с онлайн-записью, интеграцией календаря, автоматическими напоминаниями через Telegram/email, отзывами клиентов и приёмом оплаты. Идеально для салонов, клиник и консультантов."
         }
       }
     }
